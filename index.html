@@ -87,10 +87,16 @@
   max-width:900px;
 }
     
+.calendar-wrap{
+  width:100%;
+  overflow-x:auto;
+}
+
 .calendar{
   display:grid;
-  grid-template-columns:repeat(7, minmax(0, 1fr));
+  grid-template-columns:repeat(7, minmax(260px, 1fr));
   gap:16px;
+  min-width:1900px;
   width:100%;
   align-items:start;
 }
@@ -333,23 +339,7 @@
         text-align:left;
       }
     }
-    @media (max-width: 1600px){
-  .calendar{
-    grid-template-columns:repeat(4, 1fr);
-  }
-}
 
-@media (max-width: 1200px){
-  .calendar{
-    grid-template-columns:repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 768px){
-  .calendar{
-    grid-template-columns:1fr;
-  }
-}
   </style>
 </head>
 <body>
@@ -414,7 +404,10 @@
       <div style="margin-top:8px;">Cargando programación...</div>
     </div>
 
-    <div id="calendarContainer" class="calendar"></div>
+<div class="calendar-wrap">
+  <div id="calendarContainer" class="calendar"></div>
+</div>
+    
   </div>
 
   <div id="movilModalBackdrop" class="modal-backdrop hidden">
