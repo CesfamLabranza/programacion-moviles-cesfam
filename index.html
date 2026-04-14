@@ -14,6 +14,7 @@
       --primary:#2563eb;
       --danger:#dc2626;
       --success:#16a34a;
+      --warning:#f59e0b;
     }
 
     *{box-sizing:border-box}
@@ -56,7 +57,7 @@
       flex-direction:column;
       gap:18px;
       padding:24px;
-      max-width:1600px;
+      max-width:1700px;
       margin:0 auto;
     }
 
@@ -84,13 +85,15 @@
 
     .day-card{
       padding:14px;
-      min-height:260px;
+      min-height:280px;
     }
 
     .day-title{
       font-size:18px;
       font-weight:bold;
       margin-bottom:12px;
+      padding-bottom:8px;
+      border-bottom:1px solid #e5e7eb;
     }
 
     .trip-card{
@@ -129,7 +132,7 @@
     }
 
     textarea{
-      min-height:100px;
+      min-height:110px;
       resize:vertical;
     }
 
@@ -175,6 +178,12 @@
       gap:14px;
     }
 
+    .grid-1{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:14px;
+    }
+
     .modal-backdrop{
       position:fixed;
       inset:0;
@@ -188,8 +197,8 @@
 
     .modal{
       width:100%;
-      max-width:900px;
-      max-height:92vh;
+      max-width:980px;
+      max-height:94vh;
       overflow:auto;
       padding:24px;
     }
@@ -231,6 +240,61 @@
 
     .week-input{
       min-width:180px;
+    }
+
+    .section-title{
+      margin:6px 0 12px 0;
+      font-size:22px;
+    }
+
+    .section-subtitle{
+      margin:0 0 14px 0;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .block-card{
+      background:#fff;
+      border:1px solid #e5e7eb;
+      border-radius:14px;
+      padding:18px;
+      margin-top:12px;
+    }
+
+    .block-card.salida{
+      border-left:6px solid var(--primary);
+    }
+
+    .block-card.retorno{
+      border-left:6px solid var(--success);
+    }
+
+    .block-heading{
+      margin:0 0 14px 0;
+      font-size:18px;
+      font-weight:bold;
+    }
+
+    .trip-badge{
+      display:inline-block;
+      padding:5px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:bold;
+      background:#eef2ff;
+      color:#1d4ed8;
+      margin-bottom:8px;
+    }
+
+    .trip-badge.return{
+      background:#ecfdf5;
+      color:#047857;
+    }
+
+    hr.separator{
+      border:none;
+      border-top:1px solid #e5e7eb;
+      margin:18px 0;
     }
 
     @keyframes spin{
@@ -317,7 +381,8 @@
 
   <div id="movilModalBackdrop" class="modal-backdrop hidden">
     <div class="modal">
-      <h3 id="movilModalTitle" style="margin-top:0;">Nueva programación</h3>
+      <h2 id="movilModalTitle" class="section-title">Nueva programación</h2>
+      <p class="section-subtitle">Complete los datos generales y luego registre por separado la salida y el retorno.</p>
 
       <form id="movilForm" onsubmit="saveMovilProgramacion(event)">
         <input type="hidden" id="movilId" />
@@ -353,51 +418,71 @@
           </div>
 
           <div>
-            <label>Hora salida</label>
-            <input type="time" id="movilHoraSalida" required />
-          </div>
-
-          <div>
-            <label>Hora retorno</label>
-            <input type="time" id="movilHoraRetorno" required />
-          </div>
-
-          <div>
             <label>Cantidad pasajeros</label>
             <input type="number" id="movilPasajeros" min="0" required />
           </div>
 
-          <div>
-            <label>Chofer salida</label>
-            <input type="text" id="movilChoferSalida" required />
+          <div style="display:flex;align-items:flex-end;color:#6b7280;font-size:13px;">
+            Verifique que el destino, la fecha y el día correspondan a la misma programación.
           </div>
+        </div>
 
-          <div>
-            <label>Chofer retorno</label>
-            <input type="text" id="movilChoferRetorno" required />
+        <div class="block-card salida">
+          <div class="trip-badge">Salida</div>
+          <h3 class="block-heading">Datos de salida</h3>
+
+          <div class="grid-2">
+            <div>
+              <label>Hora salida</label>
+              <input type="time" id="movilHoraSalida" required />
+            </div>
+
+            <div>
+              <label>Chofer salida</label>
+              <input type="text" id="movilChoferSalida" required />
+            </div>
+
+            <div>
+              <label>Móvil salida</label>
+              <input type="text" id="movilSalida" required />
+            </div>
+
+            <div>
+              <label>Patente salida</label>
+              <input type="text" id="movilPatenteSalida" required />
+            </div>
           </div>
+        </div>
 
-          <div>
-            <label>Móvil salida</label>
-            <input type="text" id="movilSalida" required />
+        <div class="block-card retorno">
+          <div class="trip-badge return">Retorno</div>
+          <h3 class="block-heading">Datos de retorno</h3>
+
+          <div class="grid-2">
+            <div>
+              <label>Hora retorno</label>
+              <input type="time" id="movilHoraRetorno" required />
+            </div>
+
+            <div>
+              <label>Chofer retorno</label>
+              <input type="text" id="movilChoferRetorno" required />
+            </div>
+
+            <div>
+              <label>Móvil retorno</label>
+              <input type="text" id="movilRetorno" required />
+            </div>
+
+            <div>
+              <label>Patente retorno</label>
+              <input type="text" id="movilPatenteRetorno" required />
+            </div>
           </div>
+        </div>
 
+        <div class="grid-1" style="margin-top:14px;">
           <div>
-            <label>Patente salida</label>
-            <input type="text" id="movilPatenteSalida" required />
-          </div>
-
-          <div>
-            <label>Móvil retorno</label>
-            <input type="text" id="movilRetorno" required />
-          </div>
-
-          <div>
-            <label>Patente retorno</label>
-            <input type="text" id="movilPatenteRetorno" required />
-          </div>
-
-          <div style="grid-column:1/-1;">
             <label>Observaciones</label>
             <textarea id="movilObservaciones"></textarea>
           </div>
@@ -559,15 +644,27 @@
             html += `
               <div class="trip-card">
                 <div><strong>Fecha:</strong> ${escapeHtml(item.fecha)}</div>
-                <div><strong>Hora salida:</strong> ${escapeHtml(item.horaSalida)}</div>
-                <div><strong>Hora retorno:</strong> ${escapeHtml(item.horaRetorno)}</div>
                 <div><strong>Lugar:</strong> ${escapeHtml(item.destino)}</div>
                 <div><strong>Pasajeros:</strong> ${escapeHtml(item.pasajeros)}</div>
+
+                <hr class="separator">
+
+                <div class="trip-badge">Salida</div>
+                <div><strong>Hora salida:</strong> ${escapeHtml(item.horaSalida)}</div>
                 <div><strong>Chofer salida:</strong> ${escapeHtml(item.choferSalida)}</div>
-                <div><strong>Chofer retorno:</strong> ${escapeHtml(item.choferRetorno)}</div>
                 <div><strong>Móvil salida:</strong> ${escapeHtml(item.movilSalida)} (${escapeHtml(item.patenteSalida)})</div>
+
+                <hr class="separator">
+
+                <div class="trip-badge return">Retorno</div>
+                <div><strong>Hora retorno:</strong> ${escapeHtml(item.horaRetorno)}</div>
+                <div><strong>Chofer retorno:</strong> ${escapeHtml(item.choferRetorno)}</div>
                 <div><strong>Móvil retorno:</strong> ${escapeHtml(item.movilRetorno)} (${escapeHtml(item.patenteRetorno)})</div>
+
+                <hr class="separator">
+
                 <div><strong>Observaciones:</strong> ${escapeHtml(item.observaciones || "-")}</div>
+
                 ${
                   isAdmin()
                     ? `
@@ -632,13 +729,22 @@
       const errorEl = document.getElementById("movilFormError");
       errorEl.classList.add("hidden");
 
+      const horaSalida = document.getElementById("movilHoraSalida").value;
+      const horaRetorno = document.getElementById("movilHoraRetorno").value;
+
+      if (horaSalida && horaRetorno && horaRetorno < horaSalida) {
+        errorEl.textContent = "La hora de retorno no debe ser menor que la hora de salida.";
+        errorEl.classList.remove("hidden");
+        return;
+      }
+
       const payload = {
         id: document.getElementById("movilId").value.trim(),
         semana: document.getElementById("movilSemana").value,
         fecha: document.getElementById("movilFecha").value,
         dia: document.getElementById("movilDia").value,
-        horaSalida: document.getElementById("movilHoraSalida").value,
-        horaRetorno: document.getElementById("movilHoraRetorno").value,
+        horaSalida: horaSalida,
+        horaRetorno: horaRetorno,
         destino: document.getElementById("movilDestino").value.trim(),
         pasajeros: document.getElementById("movilPasajeros").value.trim(),
         choferSalida: document.getElementById("movilChoferSalida").value.trim(),
