@@ -350,6 +350,23 @@
         text-align:left;
       }
     }
+    @media (max-width: 1600px){
+  .calendar{
+    grid-template-columns:repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1200px){
+  .calendar{
+    grid-template-columns:repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px){
+  .calendar{
+    grid-template-columns:1fr;
+  }
+}
   </style>
 </head>
 <body>
@@ -727,6 +744,7 @@ html += `<div class="day-card">`;
       });
     }
 
+    html += `</div></div>`;
     container.innerHTML = html;
     return;
   }
@@ -945,23 +963,7 @@ function getItemDateISO(item) {
         alert("No fue posible conectar con el sistema.");
       }
     }
-    @media (max-width: 1600px){
-  .calendar{
-    grid-template-columns:repeat(4, 1fr);
-  }
-}
 
-@media (max-width: 1200px){
-  .calendar{
-    grid-template-columns:repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 768px){
-  .calendar{
-    grid-template-columns:1fr;
-  }
-}
   </script>
 </body>
 </html>
