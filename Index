@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Programación de móviles</title>
+  <style>
+    :root{
+      --bg:#f4f7fb;
+      --panel:#ffffff;
+      --line:#dbe3ee;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --primary:#2563eb;
+      --danger:#dc2626;
+      --success:#16a34a;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    .hidden{display:none !important}
+
+    .login-screen{
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:24px;
+    }
+
+    .login-card,
+    .panel,
+    .day-card,
+    .modal{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:16px;
+    }
+
+    .login-card{
+      width:100%;
+      max-width:420px;
+      padding:24px;
+    }
+
+    .page{
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      padding:24px;
+      max-width:1600px;
+      margin:0 auto;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:16px;
+      flex-wrap:wrap;
+      padding:20px;
+    }
+
+    .toolbar{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .calendar{
+      display:grid;
+      grid-template-columns:repeat(7, 1fr);
+      gap:14px;
+    }
+
+    .day-card{
+      padding:14px;
+      min-height:260px;
+    }
+
+    .day-title{
+      font-size:18px;
+      font-weight:bold;
+      margin-bottom:12px;
+    }
+
+    .trip-card{
+      border:1px solid #e5e7eb;
+      border-radius:12px;
+      padding:12px;
+      margin-bottom:10px;
+      background:#f9fbff;
+    }
+
+    .trip-card div{
+      margin-bottom:6px;
+      font-size:14px;
+      line-height:1.35;
+    }
+
+    .trip-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+
+    .empty{
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    input, select, textarea{
+      width:100%;
+      padding:12px;
+      border:1px solid #cdd7e3;
+      border-radius:10px;
+      font-size:14px;
+      background:#fff;
+    }
+
+    textarea{
+      min-height:100px;
+      resize:vertical;
+    }
+
+    label{
+      display:block;
+      margin-bottom:6px;
+      font-size:14px;
+      font-weight:bold;
+    }
+
+    .btn{
+      border:none;
+      border-radius:10px;
+      padding:12px 16px;
+      font-weight:bold;
+      cursor:pointer;
+      font-size:14px;
+    }
+
+    .btn-primary{
+      background:var(--primary);
+      color:#fff;
+    }
+
+    .btn-secondary{
+      background:#eef2f7;
+      color:var(--text);
+    }
+
+    .btn-danger{
+      background:var(--danger);
+      color:#fff;
+    }
+
+    .btn-success{
+      background:var(--success);
+      color:#fff;
+    }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns:repeat(2, 1fr);
+      gap:14px;
+    }
+
+    .modal-backdrop{
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,.45);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:18px;
+      z-index:9999;
+    }
+
+    .modal{
+      width:100%;
+      max-width:900px;
+      max-height:92vh;
+      overflow:auto;
+      padding:24px;
+    }
+
+    .modal-actions{
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      margin-top:18px;
+      flex-wrap:wrap;
+    }
+
+    .error-text{
+      color:var(--danger);
+      font-size:13px;
+      margin-top:8px;
+    }
+
+    .spinner{
+      width:28px;
+      height:28px;
+      border:4px solid #e5e7eb;
+      border-top:4px solid var(--primary);
+      border-radius:50%;
+      animation:spin 1s linear infinite;
+      margin:auto;
+    }
+
+    .loading-box{
+      text-align:center;
+      padding:20px;
+      color:var(--muted);
+    }
+
+    .user-box{
+      text-align:right;
+      font-size:14px;
+    }
+
+    .week-input{
+      min-width:180px;
+    }
+
+    @keyframes spin{
+      0%{transform:rotate(0deg)}
+      100%{transform:rotate(360deg)}
+    }
+
+    @media (max-width:1300px){
+      .calendar{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media (max-width:900px){
+      .grid-2{
+        grid-template-columns:1fr;
+      }
+
+      .topbar{
+        align-items:flex-start;
+      }
+
+      .user-box{
+        text-align:left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="loginScreen" class="login-screen">
+    <div class="login-card">
+      <h2 style="margin-top:0;">Programación de móviles</h2>
+      <p style="color:#6b7280;">Ingrese su RUT y contraseña.</p>
+
+      <div style="margin-bottom:12px;">
+        <label>RUT</label>
+        <input id="loginRut" type="text" />
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <label>Contraseña</label>
+        <input id="loginPassword" type="password" />
+      </div>
+
+      <button class="btn btn-primary" style="width:100%;" onclick="login()">Ingresar</button>
+
+      <div id="loginLoading" class="hidden" style="text-align:center;margin-top:12px;">
+        <div class="spinner"></div>
+        <div style="margin-top:8px;font-size:13px;color:#6b7280;">Validando credenciales...</div>
+      </div>
+
+      <div id="loginError" class="error-text hidden"></div>
+    </div>
+  </div>
+
+  <div id="app" class="page hidden">
+    <div class="panel topbar">
+      <div>
+        <h1 style="margin:0;">Programación semanal de móviles</h1>
+        <p style="margin:8px 0 0;color:#6b7280;">Planificación de salidas y retornos del establecimiento.</p>
+      </div>
+
+      <div class="toolbar">
+        <input type="week" id="weekFilter" class="week-input" onchange="loadMoviles()" />
+        <button class="btn btn-secondary" onclick="goToCurrentWeek()">Semana actual</button>
+        <button class="btn btn-secondary" onclick="loadMoviles()">Actualizar</button>
+        <button id="newButton" class="btn btn-primary hidden" onclick="openMovilModal()">+ Nueva programación</button>
+      </div>
+
+      <div class="user-box">
+        <strong id="loggedUserName"></strong>
+        <div id="loggedUserMeta" style="color:#6b7280;margin-top:6px;"></div>
+        <button class="btn btn-secondary" style="margin-top:10px;" onclick="logout()">Cerrar sesión</button>
+      </div>
+    </div>
+
+    <div id="loadingMoviles" class="panel loading-box hidden">
+      <div class="spinner"></div>
+      <div style="margin-top:8px;">Cargando programación...</div>
+    </div>
+
+    <div id="calendarContainer" class="calendar"></div>
+  </div>
+
+  <div id="movilModalBackdrop" class="modal-backdrop hidden">
+    <div class="modal">
+      <h3 id="movilModalTitle" style="margin-top:0;">Nueva programación</h3>
+
+      <form id="movilForm" onsubmit="saveMovilProgramacion(event)">
+        <input type="hidden" id="movilId" />
+
+        <div class="grid-2">
+          <div>
+            <label>Semana</label>
+            <input type="week" id="movilSemana" required />
+          </div>
+
+          <div>
+            <label>Fecha</label>
+            <input type="date" id="movilFecha" required />
+          </div>
+
+          <div>
+            <label>Día</label>
+            <select id="movilDia" required>
+              <option value="">Seleccione</option>
+              <option>Lunes</option>
+              <option>Martes</option>
+              <option>Miércoles</option>
+              <option>Jueves</option>
+              <option>Viernes</option>
+              <option>Sábado</option>
+              <option>Domingo</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Lugar destino</label>
+            <input type="text" id="movilDestino" required />
+          </div>
+
+          <div>
+            <label>Hora salida</label>
+            <input type="time" id="movilHoraSalida" required />
+          </div>
+
+          <div>
+            <label>Hora retorno</label>
+            <input type="time" id="movilHoraRetorno" required />
+          </div>
+
+          <div>
+            <label>Cantidad pasajeros</label>
+            <input type="number" id="movilPasajeros" min="0" required />
+          </div>
+
+          <div>
+            <label>Chofer salida</label>
+            <input type="text" id="movilChoferSalida" required />
+          </div>
+
+          <div>
+            <label>Chofer retorno</label>
+            <input type="text" id="movilChoferRetorno" required />
+          </div>
+
+          <div>
+            <label>Móvil salida</label>
+            <input type="text" id="movilSalida" required />
+          </div>
+
+          <div>
+            <label>Patente salida</label>
+            <input type="text" id="movilPatenteSalida" required />
+          </div>
+
+          <div>
+            <label>Móvil retorno</label>
+            <input type="text" id="movilRetorno" required />
+          </div>
+
+          <div>
+            <label>Patente retorno</label>
+            <input type="text" id="movilPatenteRetorno" required />
+          </div>
+
+          <div style="grid-column:1/-1;">
+            <label>Observaciones</label>
+            <textarea id="movilObservaciones"></textarea>
+          </div>
+        </div>
+
+        <div id="movilFormError" class="error-text hidden"></div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeMovilModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const API = "https://script.google.com/macros/s/AKfycbzgwWOc0ZymXg6D_5yncrjhxkNRpEZVhGLYm0eC-fsOIMo01Tuoo_tQT7kHFUW6Qnwc/exec";
+
+    let currentUser = null;
+    let programaciones = [];
+
+    function escapeHtml(text) {
+      return String(text || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function isAdmin() {
+      return String(currentUser?.rol || "").toLowerCase() === "administrador";
+    }
+
+    function getCurrentWeekValue() {
+      const now = new Date();
+      const date = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+      const dayNum = date.getUTCDay() || 7;
+      date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+      const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+      const weekNo = Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+      return `${date.getUTCFullYear()}-W${String(weekNo).padStart(2, "0")}`;
+    }
+
+    function goToCurrentWeek() {
+      document.getElementById("weekFilter").value = getCurrentWeekValue();
+      loadMoviles();
+    }
+
+    async function login() {
+      const rut = document.getElementById("loginRut").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
+      const errorEl = document.getElementById("loginError");
+      const loadingEl = document.getElementById("loginLoading");
+
+      errorEl.classList.add("hidden");
+      loadingEl.classList.remove("hidden");
+
+      try {
+        const res = await fetch(API, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "login",
+            rut,
+            password
+          })
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+          loadingEl.classList.add("hidden");
+          errorEl.textContent = data.message || "Credenciales incorrectas.";
+          errorEl.classList.remove("hidden");
+          return;
+        }
+
+        currentUser = data.user;
+
+        document.getElementById("loginScreen").classList.add("hidden");
+        document.getElementById("app").classList.remove("hidden");
+
+        document.getElementById("loggedUserName").textContent =
+          `${currentUser.nombre} ${currentUser.apellidos}`;
+
+        document.getElementById("loggedUserMeta").textContent =
+          `${currentUser.profesion} | ${currentUser.establecimiento} | ${currentUser.rol}`;
+
+        document.getElementById("weekFilter").value = getCurrentWeekValue();
+
+        if (isAdmin()) {
+          document.getElementById("newButton").classList.remove("hidden");
+        }
+
+        await loadMoviles();
+      } catch (error) {
+        loadingEl.classList.add("hidden");
+        errorEl.textContent = "No fue posible conectar con el sistema.";
+        errorEl.classList.remove("hidden");
+      }
+    }
+
+    function logout() {
+      location.reload();
+    }
+
+    async function loadMoviles() {
+      const semana = document.getElementById("weekFilter").value.trim();
+      const loading = document.getElementById("loadingMoviles");
+      const container = document.getElementById("calendarContainer");
+
+      loading.classList.remove("hidden");
+      container.innerHTML = "";
+
+      try {
+        const res = await fetch(API, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "getMovilProgramacion",
+            semana
+          })
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+          container.innerHTML = `<div class="panel" style="padding:18px;">No fue posible obtener la programación.</div>`;
+          loading.classList.add("hidden");
+          return;
+        }
+
+        programaciones = data.programacion || [];
+        renderCalendar();
+      } catch (error) {
+        container.innerHTML = `<div class="panel" style="padding:18px;">No fue posible conectar con el sistema.</div>`;
+      } finally {
+        loading.classList.add("hidden");
+      }
+    }
+
+    function renderCalendar() {
+      const dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+      const container = document.getElementById("calendarContainer");
+
+      let html = "";
+
+      dias.forEach(dia => {
+        const porDia = programaciones
+          .filter(x => String(x.dia || "") === dia)
+          .sort((a, b) => String(a.horaSalida || "").localeCompare(String(b.horaSalida || "")));
+
+        html += `<div class="day-card">`;
+        html += `<div class="day-title">${dia}</div>`;
+
+        if (!porDia.length) {
+          html += `<div class="empty">Sin programación.</div>`;
+        } else {
+          porDia.forEach(item => {
+            html += `
+              <div class="trip-card">
+                <div><strong>Fecha:</strong> ${escapeHtml(item.fecha)}</div>
+                <div><strong>Hora salida:</strong> ${escapeHtml(item.horaSalida)}</div>
+                <div><strong>Hora retorno:</strong> ${escapeHtml(item.horaRetorno)}</div>
+                <div><strong>Lugar:</strong> ${escapeHtml(item.destino)}</div>
+                <div><strong>Pasajeros:</strong> ${escapeHtml(item.pasajeros)}</div>
+                <div><strong>Chofer salida:</strong> ${escapeHtml(item.choferSalida)}</div>
+                <div><strong>Chofer retorno:</strong> ${escapeHtml(item.choferRetorno)}</div>
+                <div><strong>Móvil salida:</strong> ${escapeHtml(item.movilSalida)} (${escapeHtml(item.patenteSalida)})</div>
+                <div><strong>Móvil retorno:</strong> ${escapeHtml(item.movilRetorno)} (${escapeHtml(item.patenteRetorno)})</div>
+                <div><strong>Observaciones:</strong> ${escapeHtml(item.observaciones || "-")}</div>
+                ${
+                  isAdmin()
+                    ? `
+                      <div class="trip-actions">
+                        <button class="btn btn-secondary" onclick="editMovil('${item.id}')">Modificar</button>
+                        <button class="btn btn-danger" onclick="deleteMovil('${item.id}')">Eliminar</button>
+                      </div>
+                    `
+                    : ""
+                }
+              </div>
+            `;
+          });
+        }
+
+        html += `</div>`;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function openMovilModal() {
+      document.getElementById("movilModalTitle").textContent = "Nueva programación";
+      document.getElementById("movilForm").reset();
+      document.getElementById("movilId").value = "";
+      document.getElementById("movilSemana").value = document.getElementById("weekFilter").value || getCurrentWeekValue();
+      document.getElementById("movilFormError").classList.add("hidden");
+      document.getElementById("movilModalBackdrop").classList.remove("hidden");
+    }
+
+    function closeMovilModal() {
+      document.getElementById("movilModalBackdrop").classList.add("hidden");
+    }
+
+    function editMovil(id) {
+      const item = programaciones.find(x => String(x.id) === String(id));
+      if (!item) return;
+
+      document.getElementById("movilModalTitle").textContent = "Modificar programación";
+      document.getElementById("movilId").value = item.id || "";
+      document.getElementById("movilSemana").value = item.semana || "";
+      document.getElementById("movilFecha").value = item.fecha || "";
+      document.getElementById("movilDia").value = item.dia || "";
+      document.getElementById("movilHoraSalida").value = item.horaSalida || "";
+      document.getElementById("movilHoraRetorno").value = item.horaRetorno || "";
+      document.getElementById("movilDestino").value = item.destino || "";
+      document.getElementById("movilPasajeros").value = item.pasajeros || "";
+      document.getElementById("movilChoferSalida").value = item.choferSalida || "";
+      document.getElementById("movilChoferRetorno").value = item.choferRetorno || "";
+      document.getElementById("movilSalida").value = item.movilSalida || "";
+      document.getElementById("movilPatenteSalida").value = item.patenteSalida || "";
+      document.getElementById("movilRetorno").value = item.movilRetorno || "";
+      document.getElementById("movilPatenteRetorno").value = item.patenteRetorno || "";
+      document.getElementById("movilObservaciones").value = item.observaciones || "";
+      document.getElementById("movilFormError").classList.add("hidden");
+      document.getElementById("movilModalBackdrop").classList.remove("hidden");
+    }
+
+    async function saveMovilProgramacion(event) {
+      event.preventDefault();
+
+      const errorEl = document.getElementById("movilFormError");
+      errorEl.classList.add("hidden");
+
+      const payload = {
+        id: document.getElementById("movilId").value.trim(),
+        semana: document.getElementById("movilSemana").value,
+        fecha: document.getElementById("movilFecha").value,
+        dia: document.getElementById("movilDia").value,
+        horaSalida: document.getElementById("movilHoraSalida").value,
+        horaRetorno: document.getElementById("movilHoraRetorno").value,
+        destino: document.getElementById("movilDestino").value.trim(),
+        pasajeros: document.getElementById("movilPasajeros").value.trim(),
+        choferSalida: document.getElementById("movilChoferSalida").value.trim(),
+        choferRetorno: document.getElementById("movilChoferRetorno").value.trim(),
+        movilSalida: document.getElementById("movilSalida").value.trim(),
+        patenteSalida: document.getElementById("movilPatenteSalida").value.trim(),
+        movilRetorno: document.getElementById("movilRetorno").value.trim(),
+        patenteRetorno: document.getElementById("movilPatenteRetorno").value.trim(),
+        observaciones: document.getElementById("movilObservaciones").value.trim()
+      };
+
+      try {
+        const res = await fetch(API, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "saveMovilProgramacion",
+            user: currentUser,
+            programacion: payload
+          })
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+          errorEl.textContent = data.message || "No fue posible guardar.";
+          errorEl.classList.remove("hidden");
+          return;
+        }
+
+        closeMovilModal();
+        await loadMoviles();
+        alert(data.message);
+      } catch (error) {
+        errorEl.textContent = "No fue posible conectar con el sistema.";
+        errorEl.classList.remove("hidden");
+      }
+    }
+
+    async function deleteMovil(id) {
+      if (!confirm("¿Desea eliminar esta programación?")) return;
+
+      try {
+        const res = await fetch(API, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "deleteMovilProgramacion",
+            user: currentUser,
+            id
+          })
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+          alert(data.message || "No fue posible eliminar.");
+          return;
+        }
+
+        await loadMoviles();
+        alert(data.message);
+      } catch (error) {
+        alert("No fue posible conectar con el sistema.");
+      }
+    }
+  </script>
+</body>
+</html>
