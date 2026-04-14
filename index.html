@@ -51,15 +51,15 @@
       padding:24px;
     }
 
-    .page{
-      min-height:100vh;
-      display:flex;
-      flex-direction:column;
-      gap:18px;
-      padding:24px;
-      max-width:1700px;
-      margin:0 auto;
-    }
+.page{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  padding:24px;
+  width:100%;
+  max-width:none; 
+}
 
     .topbar{
       display:flex;
@@ -76,17 +76,34 @@
       flex-wrap:wrap;
       align-items:center;
     }
+.daily-wrapper{
+  width:100%;
+  display:flex;
+  justify-content:center;
+}
 
-    .calendar{
-      display:grid;
-      grid-template-columns:repeat(7, 1fr);
-      gap:14px;
-    }
+.daily-wrapper .day-card{
+  width:100%;
+  max-width:900px;
+}
+    
+.calendar{
+  display:grid;
+  grid-template-columns:repeat(7, minmax(180px, 1fr));
+  gap:16px;
+  width:100%;
+  align-items:start;
+}
 
-    .day-card{
-      padding:14px;
-      min-height:280px;
-    }
+.day-card{
+  background:#fff;
+  border:1px solid #dbe3ee;
+  border-radius:18px;
+  padding:16px;
+  min-height:260px;
+  width:100%;
+  box-sizing:border-box;
+}
 
     .day-title{
       font-size:18px;
@@ -302,11 +319,23 @@
       100%{transform:rotate(360deg)}
     }
 
-    @media (max-width:1300px){
-      .calendar{
-        grid-template-columns:1fr;
-      }
-    }
+@media (max-width: 1600px){
+  .calendar{
+    grid-template-columns:repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1200px){
+  .calendar{
+    grid-template-columns:repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px){
+  .calendar{
+    grid-template-columns:1fr;
+  }
+}
 
     @media (max-width:900px){
       .grid-2{
@@ -648,7 +677,8 @@ function renderCalendar() {
       .filter(x => String(getItemDateISO(x)) === String(selectedDate || ""))
       .sort((a, b) => String(a.horaSalida || "").localeCompare(String(b.horaSalida || "")));
 
-    html += `<div class="day-card" style="max-width:900px;">`;
+    html += `<div class="daily-wrapper">`;
+html += `<div class="day-card">`;
     html += `<div class="day-title">Programación diaria</div>`;
 
     if (!selectedDate) {
@@ -697,12 +727,11 @@ function renderCalendar() {
       });
     }
 
-    html += `</div>`;
     container.innerHTML = html;
     return;
   }
 
-  html += `<div class="calendar">`;
+  html += ``;
 
   dias.forEach(dia => {
     const porDia = programaciones
@@ -916,6 +945,23 @@ function getItemDateISO(item) {
         alert("No fue posible conectar con el sistema.");
       }
     }
+    @media (max-width: 1600px){
+  .calendar{
+    grid-template-columns:repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1200px){
+  .calendar{
+    grid-template-columns:repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px){
+  .calendar{
+    grid-template-columns:1fr;
+  }
+}
   </script>
 </body>
 </html>
