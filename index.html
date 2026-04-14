@@ -357,6 +357,15 @@
         <p style="margin:8px 0 0;color:#6b7280;">Planificación de salidas y retornos del establecimiento.</p>
       </div>
 
+<div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+  <select id="viewMode" onchange="updateViewControls(); renderCalendar()" style="width:160px;">
+    <option value="semanal">Vista semanal</option>
+    <option value="diaria">Vista diaria</option>
+  </select>
+
+  <input type="date" id="dayFilter" style="width:180px;" onchange="renderCalendar()">
+</div>
+      
       <div class="toolbar">
         <input type="week" id="weekFilter" class="week-input" onchange="loadMoviles()" />
         <button class="btn btn-secondary" onclick="goToCurrentWeek()">Semana actual</button>
@@ -527,10 +536,12 @@
       return `${date.getUTCFullYear()}-W${String(weekNo).padStart(2, "0")}`;
     }
 
-    function goToCurrentWeek() {
-      document.getElementById("weekFilter").value = getCurrentWeekValue();
-      loadMoviles();
-    }
+function goToCurrentWeek() {
+  document.getElementById("weekFilter").value = getCurrentWeekValue();
+  document.getElementById("dayFilter").value = new Date().toISOString().split("T")[0];
+  updateViewControls();
+  loadMoviles();
+}
 
     async function login() {
       const rut = document.getElementById("loginRut").value.trim();
@@ -570,14 +581,15 @@
 
         document.getElementById("loggedUserMeta").textContent =
           `${currentUser.profesion} | ${currentUser.establecimiento} | ${currentUser.rol}`;
+document.getElementById("weekFilter").value = getCurrentWeekValue();
+document.getElementById("dayFilter").value = new Date().toISOString().split("T")[0];
+updateViewControls();
 
-        document.getElementById("weekFilter").value = getCurrentWeekValue();
+if (isAdmin()) {
+  document.getElementById("newButton").classList.remove("hidden");
+}
 
-        if (isAdmin()) {
-          document.getElementById("newButton").classList.remove("hidden");
-        }
-
-        await loadMoviles();
+await loadMoviles();
       } catch (error) {
         loadingEl.classList.add("hidden");
         errorEl.textContent = "No fue posible conectar con el sistema.";
@@ -623,69 +635,150 @@
       }
     }
 
-    function renderCalendar() {
-      const dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
-      const container = document.getElementById("calendarContainer");
+function renderCalendar() {
+  const dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+  const container = document.getElementById("calendarContainer");
+  const mode = document.getElementById("viewMode").value;
+  const selectedDate = document.getElementById("dayFilter").value;
 
-      let html = "";
+  let html = "";
 
-      dias.forEach(dia => {
-        const porDia = programaciones
-          .filter(x => String(x.dia || "") === dia)
-          .sort((a, b) => String(a.horaSalida || "").localeCompare(String(b.horaSalida || "")));
+  if (mode === "diaria") {
+    const filtrados = programaciones
+      .filter(x => String(getItemDateISO(x)) === String(selectedDate || ""))
+      .sort((a, b) => String(a.horaSalida || "").localeCompare(String(b.horaSalida || "")));
 
-        html += `<div class="day-card">`;
-        html += `<div class="day-title">${dia}</div>`;
+    html += `<div class="day-card" style="max-width:900px;">`;
+    html += `<div class="day-title">Programación diaria</div>`;
 
-        if (!porDia.length) {
-          html += `<div class="empty">Sin programación.</div>`;
-        } else {
-          porDia.forEach(item => {
-            html += `
-              <div class="trip-card">
-                <div><strong>Fecha:</strong> ${escapeHtml(item.fecha)}</div>
-                <div><strong>Lugar:</strong> ${escapeHtml(item.destino)}</div>
-                <div><strong>Pasajeros:</strong> ${escapeHtml(item.pasajeros)}</div>
+    if (!selectedDate) {
+      html += `<div class="empty">Seleccione una fecha.</div>`;
+    } else if (!filtrados.length) {
+      html += `<div class="empty">No hay programación para esa fecha.</div>`;
+    } else {
+      filtrados.forEach(item => {
+        html += `
+          <div class="trip-card">
+            <div><strong>Día:</strong> ${escapeHtml(item.dia)}</div>
+            <div><strong>Fecha:</strong> ${escapeHtml(item.fecha)}</div>
+            <div><strong>Lugar:</strong> ${escapeHtml(item.destino)}</div>
+            <div><strong>Pasajeros:</strong> ${escapeHtml(item.pasajeros)}</div>
 
-                <hr class="separator">
+            <hr class="separator">
 
-                <div class="trip-badge">Salida</div>
-                <div><strong>Hora salida:</strong> ${escapeHtml(item.horaSalida)}</div>
-                <div><strong>Chofer salida:</strong> ${escapeHtml(item.choferSalida)}</div>
-                <div><strong>Móvil salida:</strong> ${escapeHtml(item.movilSalida)} (${escapeHtml(item.patenteSalida)})</div>
+            <div class="trip-badge">Salida</div>
+            <div><strong>Hora salida:</strong> ${escapeHtml(item.horaSalida)}</div>
+            <div><strong>Chofer salida:</strong> ${escapeHtml(item.choferSalida)}</div>
+            <div><strong>Móvil salida:</strong> ${escapeHtml(item.movilSalida)} (${escapeHtml(item.patenteSalida)})</div>
 
-                <hr class="separator">
+            <hr class="separator">
 
-                <div class="trip-badge return">Retorno</div>
-                <div><strong>Hora retorno:</strong> ${escapeHtml(item.horaRetorno)}</div>
-                <div><strong>Chofer retorno:</strong> ${escapeHtml(item.choferRetorno)}</div>
-                <div><strong>Móvil retorno:</strong> ${escapeHtml(item.movilRetorno)} (${escapeHtml(item.patenteRetorno)})</div>
+            <div class="trip-badge return">Retorno</div>
+            <div><strong>Hora retorno:</strong> ${escapeHtml(item.horaRetorno)}</div>
+            <div><strong>Chofer retorno:</strong> ${escapeHtml(item.choferRetorno)}</div>
+            <div><strong>Móvil retorno:</strong> ${escapeHtml(item.movilRetorno)} (${escapeHtml(item.patenteRetorno)})</div>
 
-                <hr class="separator">
+            <hr class="separator">
 
-                <div><strong>Observaciones:</strong> ${escapeHtml(item.observaciones || "-")}</div>
+            <div><strong>Observaciones:</strong> ${escapeHtml(item.observaciones || "-")}</div>
 
-                ${
-                  isAdmin()
-                    ? `
-                      <div class="trip-actions">
-                        <button class="btn btn-secondary" onclick="editMovil('${item.id}')">Modificar</button>
-                        <button class="btn btn-danger" onclick="deleteMovil('${item.id}')">Eliminar</button>
-                      </div>
-                    `
-                    : ""
-                }
-              </div>
-            `;
-          });
-        }
-
-        html += `</div>`;
+            ${
+              isAdmin()
+                ? `
+                  <div class="trip-actions">
+                    <button class="btn btn-secondary" onclick="editMovil('${item.id}')">Modificar</button>
+                    <button class="btn btn-danger" onclick="deleteMovil('${item.id}')">Eliminar</button>
+                  </div>
+                `
+                : ""
+            }
+          </div>
+        `;
       });
-
-      container.innerHTML = html;
     }
 
+    html += `</div>`;
+    container.innerHTML = html;
+    return;
+  }
+
+  html += `<div class="calendar">`;
+
+  dias.forEach(dia => {
+    const porDia = programaciones
+      .filter(x => String(x.dia || "") === dia)
+      .sort((a, b) => String(a.horaSalida || "").localeCompare(String(b.horaSalida || "")));
+
+    html += `<div class="day-card">`;
+    html += `<div class="day-title">${dia}</div>`;
+
+    if (!porDia.length) {
+      html += `<div class="empty">Sin programación.</div>`;
+    } else {
+      porDia.forEach(item => {
+        html += `
+          <div class="trip-card">
+            <div><strong>Fecha:</strong> ${escapeHtml(item.fecha)}</div>
+            <div><strong>Lugar:</strong> ${escapeHtml(item.destino)}</div>
+            <div><strong>Pasajeros:</strong> ${escapeHtml(item.pasajeros)}</div>
+
+            <hr class="separator">
+
+            <div class="trip-badge">Salida</div>
+            <div><strong>Hora salida:</strong> ${escapeHtml(item.horaSalida)}</div>
+            <div><strong>Chofer salida:</strong> ${escapeHtml(item.choferSalida)}</div>
+            <div><strong>Móvil salida:</strong> ${escapeHtml(item.movilSalida)} (${escapeHtml(item.patenteSalida)})</div>
+
+            <hr class="separator">
+
+            <div class="trip-badge return">Retorno</div>
+            <div><strong>Hora retorno:</strong> ${escapeHtml(item.horaRetorno)}</div>
+            <div><strong>Chofer retorno:</strong> ${escapeHtml(item.choferRetorno)}</div>
+            <div><strong>Móvil retorno:</strong> ${escapeHtml(item.movilRetorno)} (${escapeHtml(item.patenteRetorno)})</div>
+
+            <hr class="separator">
+
+            <div><strong>Observaciones:</strong> ${escapeHtml(item.observaciones || "-")}</div>
+
+            ${
+              isAdmin()
+                ? `
+                  <div class="trip-actions">
+                    <button class="btn btn-secondary" onclick="editMovil('${item.id}')">Modificar</button>
+                    <button class="btn btn-danger" onclick="deleteMovil('${item.id}')">Eliminar</button>
+                  </div>
+                `
+                : ""
+            }
+          </div>
+        `;
+      });
+    }
+
+    html += `</div>`;
+  });
+
+  html += `</div>`;
+  container.innerHTML = html;
+}
+
+function getItemDateISO(item) {
+  if (item.fechaISO) return item.fechaISO;
+
+  const fecha = String(item.fecha || "").trim();
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+    return fecha;
+  }
+
+  if (/^\d{2}-\d{2}-\d{4}$/.test(fecha)) {
+    const parts = fecha.split("-");
+    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+  }
+
+  return "";
+}
+    
     function openMovilModal() {
       document.getElementById("movilModalTitle").textContent = "Nueva programación";
       document.getElementById("movilForm").reset();
@@ -706,7 +799,7 @@
       document.getElementById("movilModalTitle").textContent = "Modificar programación";
       document.getElementById("movilId").value = item.id || "";
       document.getElementById("movilSemana").value = item.semana || "";
-      document.getElementById("movilFecha").value = item.fecha || "";
+      document.getElementById("movilFecha").value = getItemDateISO(item);
       document.getElementById("movilDia").value = item.dia || "";
       document.getElementById("movilHoraSalida").value = item.horaSalida || "";
       document.getElementById("movilHoraRetorno").value = item.horaRetorno || "";
@@ -723,6 +816,20 @@
       document.getElementById("movilModalBackdrop").classList.remove("hidden");
     }
 
+    function updateViewControls() {
+  const mode = document.getElementById("viewMode").value;
+  const dayFilter = document.getElementById("dayFilter");
+  const weekFilter = document.getElementById("weekFilter");
+
+  if (mode === "diaria") {
+    dayFilter.style.display = "inline-block";
+    weekFilter.style.display = "none";
+  } else {
+    dayFilter.style.display = "none";
+    weekFilter.disabled = false;
+  }
+}
+    
     async function saveMovilProgramacion(event) {
       event.preventDefault();
 
