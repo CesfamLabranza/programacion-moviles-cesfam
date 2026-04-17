@@ -14,7 +14,6 @@
       --primary:#2563eb;
       --danger:#dc2626;
       --success:#16a34a;
-      --warning:#f59e0b;
       --header:#eef2f7;
       --chip:#eef4ff;
       --chip-border:#c7d7ff;
@@ -31,28 +30,6 @@
 
     .hidden{display:none !important}
 
-    .login-screen{
-      min-height:100vh;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      padding:24px;
-    }
-
-    .login-card,
-    .panel,
-    .modal{
-      background:var(--panel);
-      border:1px solid var(--line);
-      border-radius:16px;
-    }
-
-    .login-card{
-      width:100%;
-      max-width:420px;
-      padding:24px;
-    }
-
     .page{
       min-height:100vh;
       display:flex;
@@ -61,6 +38,13 @@
       padding:16px;
       width:100%;
       max-width:none;
+    }
+
+    .panel,
+    .modal{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:16px;
     }
 
     .topbar{
@@ -79,25 +63,9 @@
       align-items:center;
     }
 
-    .daily-wrapper{
-      width:100%;
-      display:flex;
-      justify-content:center;
-    }
-
-    .daily-board{
-      width:100%;
-      max-width:1100px;
-      display:grid;
-      grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));
-      gap:16px;
-    }
-
-    .daily-card{
-      background:#fff;
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:16px;
+    .user-box{
+      text-align:right;
+      font-size:14px;
     }
 
     .calendar-wrap{
@@ -254,33 +222,33 @@
       color:#374151;
     }
 
+    .daily-wrapper{
+      width:100%;
+      display:flex;
+      justify-content:center;
+    }
+
+    .daily-board{
+      width:100%;
+      max-width:1100px;
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));
+      gap:16px;
+    }
+
+    .daily-card{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:16px;
+    }
+
     .day-card-title{
       font-size:18px;
       font-weight:bold;
       margin:0 0 12px 0;
       padding-bottom:8px;
       border-bottom:1px solid #e5e7eb;
-    }
-
-    input, select, textarea{
-      width:100%;
-      padding:12px;
-      border:1px solid #cdd7e3;
-      border-radius:10px;
-      font-size:14px;
-      background:#fff;
-    }
-
-    textarea{
-      min-height:110px;
-      resize:vertical;
-    }
-
-    label{
-      display:block;
-      margin-bottom:6px;
-      font-size:14px;
-      font-weight:bold;
     }
 
     .btn{
@@ -305,6 +273,27 @@
     .btn-danger{
       background:var(--danger);
       color:#fff;
+    }
+
+    input, select, textarea{
+      width:100%;
+      padding:12px;
+      border:1px solid #cdd7e3;
+      border-radius:10px;
+      font-size:14px;
+      background:#fff;
+    }
+
+    textarea{
+      min-height:110px;
+      resize:vertical;
+    }
+
+    label{
+      display:block;
+      margin-bottom:6px;
+      font-size:14px;
+      font-weight:bold;
     }
 
     .grid-2{
@@ -366,15 +355,6 @@
       text-align:center;
       padding:20px;
       color:var(--muted);
-    }
-
-    .user-box{
-      text-align:right;
-      font-size:14px;
-    }
-
-    .week-input{
-      min-width:180px;
     }
 
     .section-title{
@@ -490,32 +470,6 @@
   </style>
 </head>
 <body>
-  <div id="loginScreen" class="login-screen">
-    <div class="login-card">
-      <h2 style="margin-top:0;">Programación de móviles</h2>
-      <p style="color:#6b7280;">Ingrese su RUT y contraseña.</p>
-
-      <div style="margin-bottom:12px;">
-        <label>RUT</label>
-        <input id="loginRut" type="text" />
-      </div>
-
-      <div style="margin-bottom:12px;">
-        <label>Contraseña</label>
-        <input id="loginPassword" type="password" />
-      </div>
-
-      <button class="btn btn-primary" style="width:100%;" onclick="login()">Ingresar</button>
-
-      <div id="loginLoading" class="hidden" style="text-align:center;margin-top:12px;">
-        <div class="spinner"></div>
-        <div style="margin-top:8px;font-size:13px;color:#6b7280;">Validando credenciales...</div>
-      </div>
-
-      <div id="loginError" class="error-text hidden"></div>
-    </div>
-  </div>
-
   <div id="app" class="page hidden">
     <div class="panel topbar">
       <div>
@@ -533,7 +487,7 @@
       </div>
 
       <div class="toolbar">
-        <input type="week" id="weekFilter" class="week-input" onchange="loadMoviles()" />
+        <input type="week" id="weekFilter" style="min-width:180px;" onchange="loadMoviles()" />
         <button class="btn btn-secondary" onclick="goToCurrentWeek()">Semana actual</button>
         <button class="btn btn-secondary" onclick="loadMoviles()">Actualizar</button>
         <button id="newButton" class="btn btn-primary hidden" onclick="openMovilModal()">+ Nueva programación</button>
@@ -542,7 +496,6 @@
       <div class="user-box">
         <strong id="loggedUserName"></strong>
         <div id="loggedUserMeta" style="color:#6b7280;margin-top:6px;"></div>
-        <button class="btn btn-secondary" style="margin-top:10px;" onclick="logout()">Cerrar sesión</button>
       </div>
     </div>
 
@@ -703,6 +656,24 @@
         .replace(/'/g, "&#039;");
     }
 
+    function getUserFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      const userParam = params.get("user");
+
+      if (!userParam) {
+        alert("No se recibió la sesión del usuario.");
+        return false;
+      }
+
+      try {
+        currentUser = JSON.parse(decodeURIComponent(userParam));
+        return true;
+      } catch (e) {
+        alert("No fue posible leer la sesión del usuario.");
+        return false;
+      }
+    }
+
     function isAdmin() {
       return String(currentUser?.rol || "").toLowerCase() === "administrador";
     }
@@ -724,63 +695,26 @@
       loadMoviles();
     }
 
-    async function login() {
-      const rut = document.getElementById("loginRut").value.trim();
-      const password = document.getElementById("loginPassword").value.trim();
-      const errorEl = document.getElementById("loginError");
-      const loadingEl = document.getElementById("loginLoading");
+    async function initApp() {
+      const ok = getUserFromURL();
+      if (!ok) return;
 
-      errorEl.classList.add("hidden");
-      loadingEl.classList.remove("hidden");
+      document.getElementById("app").classList.remove("hidden");
+      document.getElementById("loggedUserName").textContent =
+        `${currentUser.nombre || ""} ${currentUser.apellidos || ""}`.trim();
 
-      try {
-        const res = await fetch(API, {
-          method: "POST",
-          body: JSON.stringify({
-            action: "login",
-            rut,
-            password
-          })
-        });
+      document.getElementById("loggedUserMeta").textContent =
+        `${currentUser.profesion || ""} | ${currentUser.establecimiento || ""} | ${currentUser.rol || ""}`;
 
-        const data = await res.json();
+      document.getElementById("weekFilter").value = getCurrentWeekValue();
+      document.getElementById("dayFilter").value = new Date().toISOString().split("T")[0];
 
-        if (!data.success) {
-          loadingEl.classList.add("hidden");
-          errorEl.textContent = data.message || "Credenciales incorrectas.";
-          errorEl.classList.remove("hidden");
-          return;
-        }
-
-        currentUser = data.user;
-
-        document.getElementById("loginScreen").classList.add("hidden");
-        document.getElementById("app").classList.remove("hidden");
-
-        document.getElementById("loggedUserName").textContent =
-          `${currentUser.nombre} ${currentUser.apellidos}`;
-
-        document.getElementById("loggedUserMeta").textContent =
-          `${currentUser.profesion} | ${currentUser.establecimiento} | ${currentUser.rol}`;
-
-        document.getElementById("weekFilter").value = getCurrentWeekValue();
-        document.getElementById("dayFilter").value = new Date().toISOString().split("T")[0];
-        updateViewControls();
-
-        if (isAdmin()) {
-          document.getElementById("newButton").classList.remove("hidden");
-        }
-
-        await loadMoviles();
-      } catch (error) {
-        loadingEl.classList.add("hidden");
-        errorEl.textContent = "No fue posible conectar con el sistema.";
-        errorEl.classList.remove("hidden");
+      if (isAdmin()) {
+        document.getElementById("newButton").classList.remove("hidden");
       }
-    }
 
-    function logout() {
-      location.reload();
+      updateViewControls();
+      await loadMoviles();
     }
 
     async function loadMoviles() {
@@ -867,7 +801,7 @@
 
               <div><strong>Observaciones:</strong> ${escapeHtml(item.observaciones || "-")}</div>
 
-              <div class="trip-actions" style="margin-top:14px;">
+              <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
                 <button class="btn btn-secondary" onclick="showTripDetail('${item.id}')">Ver detalle</button>
                 ${isAdmin() ? `
                   <button class="btn btn-secondary" onclick="editMovil('${item.id}')">Modificar</button>
@@ -1054,7 +988,7 @@
         </div>
 
         ${isAdmin() ? `
-          <div class="trip-actions" style="margin-top:18px;">
+          <div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap;">
             <button class="btn btn-secondary" onclick="closeDetailModal(); editMovil('${item.id}')">Modificar</button>
             <button class="btn btn-danger" onclick="closeDetailModal(); deleteMovil('${item.id}')">Eliminar</button>
           </div>
@@ -1222,6 +1156,8 @@
         alert("No fue posible conectar con el sistema.");
       }
     }
+
+    initApp();
   </script>
 </body>
 </html>
