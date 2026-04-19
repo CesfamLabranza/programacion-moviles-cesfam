@@ -818,12 +818,12 @@
     }
 
     function renderWeeklyTable(container) {
-      const choferes = getChoferesOrdenados();
+      const patentes = getPatentesOrdenadas();
       let html = `<table class="schedule-table">`;
 
       html += `<thead>`;
       html += `<tr>`;
-      html += `<th class="sticky-left driver-col" rowspan="2">Chofer</th>`;
+      html += `<th class="sticky-left driver-col" rowspan="2">Patente móvil</th>`;
       DIAS.forEach(dia => {
         html += `<th colspan="2">${dia}</th>`;
       });
@@ -839,16 +839,16 @@
 
       html += `<tbody>`;
 
-      if (!choferes.length) {
+      if (!patentes.length) {
         html += `<tr><td class="driver-col sticky-left">Sin datos</td><td colspan="14" style="padding:16px;color:#6b7280;">No hay programación registrada en esta semana.</td></tr>`;
       } else {
-        choferes.forEach(chofer => {
+        patentes.forEach(patente => {
           html += `<tr>`;
-          html += `<td class="driver-col sticky-left">${escapeHtml(chofer)}</td>`;
+          html += `<td class="driver-col sticky-left">${escapeHtml(patente)}</td>`;
 
           DIAS.forEach(dia => {
             BLOQUES.forEach(bloque => {
-              const items = getItemsForCell(chofer, dia, bloque);
+              const items = getItemsForCell(patente, dia, bloque);
               html += `<td class="slot-col"><div class="cell-wrap">`;
 
               if (!items.length) {
@@ -871,30 +871,30 @@
       container.innerHTML = html;
     }
 
-    function getChoferesOrdenados() {
+    function getPatentesOrdenadas() {
       const set = new Set();
 
       programaciones.forEach(item => {
-        const salida = String(item.choferSalida || "").trim();
-        const retorno = String(item.choferRetorno || "").trim();
+        const patenteSalida = String(item.patenteSalida || "").trim().toUpperCase();
+        const patenteRetorno = String(item.patenteRetorno || "").trim().toUpperCase();
 
-        if (salida) set.add(salida);
-        if (retorno) set.add(retorno);
+        if (patenteSalida) set.add(patenteSalida);
+        if (patenteRetorno) set.add(patenteRetorno);
       });
 
       return Array.from(set).sort((a, b) => a.localeCompare(b, "es"));
     }
 
-    function getItemsForCell(chofer, dia, bloque) {
+    function getItemsForCell(patente, dia, bloque) {
       const items = [];
 
       programaciones.forEach(item => {
         if (String(item.dia || "") !== dia) return;
 
-        const salidaChofer = String(item.choferSalida || "").trim();
-        const retornoChofer = String(item.choferRetorno || "").trim();
+        const patenteSalida = String(item.patenteSalida || "").trim().toUpperCase();
+        const patenteRetorno = String(item.patenteRetorno || "").trim().toUpperCase();
 
-        if (salidaChofer === chofer && getBlockByTime(item.horaSalida) === bloque) {
+        if (patenteSalida === patente && getBlockByTime(item.horaSalida) === bloque) {
           items.push({
             id: item.id,
             tipo: "salida",
@@ -902,11 +902,12 @@
             destino: item.destino,
             patente: item.patenteSalida,
             movil: item.movilSalida,
+            chofer: item.choferSalida,
             item
           });
         }
 
-        if (retornoChofer === chofer && getBlockByTime(item.horaRetorno) === bloque) {
+        if (patenteRetorno === patente && getBlockByTime(item.horaRetorno) === bloque) {
           items.push({
             id: item.id,
             tipo: "retorno",
@@ -914,6 +915,7 @@
             destino: item.destino,
             patente: item.patenteRetorno,
             movil: item.movilRetorno,
+            chofer: item.choferRetorno,
             item
           });
         }
@@ -933,7 +935,7 @@
     function renderTripChip(cellItem) {
       const clase = cellItem.tipo === "retorno" ? "trip-chip retorno" : "trip-chip salida";
       const tag = cellItem.tipo === "retorno" ? "Retorno" : "Salida";
-      const mainLine = `${cellItem.hora || "--:--"} | ${cellItem.patente || cellItem.movil || "Sin móvil"}`;
+      const mainLine = `${cellItem.hora || "--:--"}`;
 
       return `
         <button type="button" class="${clase}" onclick="showTripDetail('${cellItem.id}')">
@@ -942,7 +944,7 @@
             <div class="chip-tag">${escapeHtml(tag)}</div>
           </div>
           <div class="chip-main">${escapeHtml(cellItem.destino || "Sin destino")}</div>
-          <div class="chip-sub">${escapeHtml(cellItem.movil || "Sin móvil")}</div>
+          <div class="chip-sub">${escapeHtml(cellItem.chofer || "Sin chofer")}</div>
         </button>
       `;
     }
