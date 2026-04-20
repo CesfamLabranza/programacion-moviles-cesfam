@@ -663,20 +663,37 @@
               <input type="time" id="movilHoraRetorno" required />
             </div>
 
-            <div>
-              <label>Chofer retorno</label>
-              <input type="text" id="movilChoferRetorno" required />
-            </div>
+           <div>
+  <label>Chofer retorno</label>
+  <select id="movilChoferRetorno" required>
+    <option value="">Seleccione</option>
+    <option>Hector Gomez Morales</option>
+    <option>Luis Muñoz Cofre</option>
+    <option>Isaias Luengo Riquelme</option>
+    <option>Carlos Soto Saez</option>
+    <option>Erwin Manriquez Alarcon</option>
+    <option>Hector Mella Muñoz</option>
+    <option>Hector Contreras Labarca</option>
+  </select>
+</div>
 
-            <div>
-              <label>Móvil retorno</label>
-              <input type="text" id="movilRetorno" required />
-            </div>
+<div>
+  <label>Móvil retorno</label>
+  <select id="movilRetorno" required onchange="updatePatenteByMovil('movilRetorno','movilPatenteRetorno')">
+    <option value="">Seleccione</option>
+    <option value="Camioneta">Camioneta</option>
+    <option value="Furgon">Furgon</option>
+    <option value="A334">A334</option>
+    <option value="A359">A359</option>
+    <option value="A315">A315</option>
+    <option value="A299">A299</option>
+  </select>
+</div>
 
-            <div>
-              <label>Patente retorno</label>
-              <input type="text" id="movilPatenteRetorno" required />
-            </div>
+<div>
+  <label>Patente retorno</label>
+  <input type="text" id="movilPatenteRetorno" required readonly />
+</div>
           </div>
         </div>
 
@@ -760,19 +777,36 @@
 
           <div class="grid-2">
             <div>
-              <label>Chofer retorno</label>
-              <input type="text" id="approveChoferRetorno" required />
-            </div>
+  <label>Chofer retorno</label>
+  <select id="movilChoferRetorno" required>
+    <option value="">Seleccione</option>
+    <option>Hector Gomez Morales</option>
+    <option>Luis Muñoz Cofre</option>
+    <option>Isaias Luengo Riquelme</option>
+    <option>Carlos Soto Saez</option>
+    <option>Erwin Manriquez Alarcon</option>
+    <option>Hector Mella Muñoz</option>
+    <option>Hector Contreras Labarca</option>
+  </select>
+</div>
 
-            <div>
-              <label>Móvil retorno</label>
-              <input type="text" id="approveMovilRetorno" required />
-            </div>
+<div>
+  <label>Móvil retorno</label>
+  <select id="movilRetorno" required onchange="updatePatenteByMovil('movilRetorno','movilPatenteRetorno')">
+    <option value="">Seleccione</option>
+    <option value="Camioneta">Camioneta</option>
+    <option value="Furgon">Furgon</option>
+    <option value="A334">A334</option>
+    <option value="A359">A359</option>
+    <option value="A315">A315</option>
+    <option value="A299">A299</option>
+  </select>
+</div>
 
-            <div>
-              <label>Patente retorno</label>
-              <input type="text" id="approvePatenteRetorno" required />
-            </div>
+<div>
+  <label>Patente retorno</label>
+  <input type="text" id="movilPatenteRetorno" required readonly />
+</div>
           </div>
         </div>
 
