@@ -619,20 +619,37 @@
               <input type="time" id="movilHoraSalida" required />
             </div>
 
-            <div>
-              <label>Chofer salida</label>
-              <input type="text" id="movilChoferSalida" required />
-            </div>
+<div>
+  <label>Chofer salida</label>
+  <select id="movilChoferSalida" required>
+    <option value="">Seleccione</option>
+    <option>Hector Gomez Morales</option>
+    <option>Luis Muñoz Cofre</option>
+    <option>Isaias Luengo Riquelme</option>
+    <option>Carlos Soto Saez</option>
+    <option>Erwin Manriquez Alarcon</option>
+    <option>Hector Mella Muñoz</option>
+    <option>Hector Contreras Labarca</option>
+  </select>
+</div>
 
-            <div>
-              <label>Móvil salida</label>
-              <input type="text" id="movilSalida" required />
-            </div>
+<div>
+  <label>Móvil salida</label>
+  <select id="movilSalida" required onchange="updatePatenteByMovil('movilSalida','movilPatenteSalida')">
+    <option value="">Seleccione</option>
+    <option value="Camioneta">Camioneta</option>
+    <option value="Furgon">Furgon</option>
+    <option value="A334">A334</option>
+    <option value="A359">A359</option>
+    <option value="A315">A315</option>
+    <option value="A299">A299</option>
+  </select>
+</div>
 
-            <div>
-              <label>Patente salida</label>
-              <input type="text" id="movilPatenteSalida" required />
-            </div>
+<div>
+  <label>Patente salida</label>
+  <input type="text" id="movilPatenteSalida" required readonly />
+</div>
           </div>
         </div>
 
@@ -703,20 +720,37 @@
           <h3 class="block-heading">Asignación de salida</h3>
 
           <div class="grid-2">
-            <div>
-              <label>Chofer salida</label>
-              <input type="text" id="approveChoferSalida" required />
-            </div>
+           <div>
+  <label>Chofer salida</label>
+  <select id="movilChoferSalida" required>
+    <option value="">Seleccione</option>
+    <option>Hector Gomez Morales</option>
+    <option>Luis Muñoz Cofre</option>
+    <option>Isaias Luengo Riquelme</option>
+    <option>Carlos Soto Saez</option>
+    <option>Erwin Manriquez Alarcon</option>
+    <option>Hector Mella Muñoz</option>
+    <option>Hector Contreras Labarca</option>
+  </select>
+</div>
 
-            <div>
-              <label>Móvil salida</label>
-              <input type="text" id="approveMovilSalida" required />
-            </div>
+<div>
+  <label>Móvil salida</label>
+  <select id="movilSalida" required onchange="updatePatenteByMovil('movilSalida','movilPatenteSalida')">
+    <option value="">Seleccione</option>
+    <option value="Camioneta">Camioneta</option>
+    <option value="Furgon">Furgon</option>
+    <option value="A334">A334</option>
+    <option value="A359">A359</option>
+    <option value="A315">A315</option>
+    <option value="A299">A299</option>
+  </select>
+</div>
 
-            <div>
-              <label>Patente salida</label>
-              <input type="text" id="approvePatenteSalida" required />
-            </div>
+<div>
+  <label>Patente salida</label>
+  <input type="text" id="movilPatenteSalida" required readonly />
+</div>
           </div>
         </div>
 
