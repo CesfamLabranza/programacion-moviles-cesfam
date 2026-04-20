@@ -751,71 +751,98 @@
       }
     }
 
-    function renderCalendar() {
-      const container = document.getElementById("calendarContainer");
-      const mode = document.getElementById("viewMode").value;
-      const selectedDate = document.getElementById("dayFilter").value;
+function renderCalendar() {
+  const container = document.getElementById("calendarContainer");
+  const mode = document.getElementById("viewMode").value;
+  const selectedDate = document.getElementById("dayFilter").value;
 
-      if (mode === "diaria") {
-        renderDaily(selectedDate, container);
-        return;
-      }
+  if (mode === "diaria") {
+    renderDailyTable(selectedDate, container);
+    return;
+  }
 
-      renderWeeklyTable(container);
+  renderWeeklyTable(container);
+}
+
+function renderDailyTable(selectedDate, container) {
+  if (!selectedDate) {
+    container.innerHTML = `
+      <div class="panel" style="padding:18px;color:#6b7280;">
+        Seleccione una fecha.
+      </div>
+    `;
+    return;
+  }
+
+  const patentes = getPatentesOrdenadas();
+  const fechaTexto = formatDateDisplayFromISO(selectedDate);
+  const diaTexto = getDayNameFromISO(selectedDate);
+
+  let html = `<table class="schedule-table">`;
+
+  html += `<thead>`;
+  html += `<tr>`;
+  html += `<th class="sticky-left driver-col" rowspan="2">Patente móvil</th>`;
+  html += `<th colspan="2">${escapeHtml(diaTexto)} · ${escapeHtml(fechaTexto)}</th>`;
+  html += `</tr>`;
+  html += `<tr>`;
+  html += `<th class="slot-col">MAÑANA (AM)</th>`;
+  html += `<th class="slot-col">TARDE (PM)</th>`;
+  html += `</tr>`;
+  html += `</thead>`;
+
+  html += `<tbody>`;
+
+  let hayDatos = false;
+
+  patentes.forEach(patente => {
+    const amItems = getItemsForDailyCell(patente, selectedDate, "AM");
+    const pmItems = getItemsForDailyCell(patente, selectedDate, "PM");
+
+    if (!amItems.length && !pmItems.length) return;
+
+    hayDatos = true;
+
+    html += `<tr>`;
+    html += `<td class="driver-col sticky-left">${escapeHtml(patente)}</td>`;
+
+    html += `<td class="slot-col"><div class="cell-wrap">`;
+    if (amItems.length) {
+      amItems.forEach(cellItem => {
+        html += renderTripChip(cellItem);
+      });
+    } else {
+      html += `<div class="empty-cell"></div>`;
     }
+    html += `</div></td>`;
 
-    function renderDaily(selectedDate, container) {
-      const filtrados = programaciones
-        .filter(x => String(getItemDateISO(x)) === String(selectedDate || ""))
-        .sort((a, b) => String(a.horaSalida || "").localeCompare(String(b.horaSalida || "")));
-
-      let html = `<div class="daily-wrapper"><div class="daily-board">`;
-
-      if (!selectedDate) {
-        html += `<div class="daily-card"><div class="empty">Seleccione una fecha.</div></div>`;
-      } else if (!filtrados.length) {
-        html += `<div class="daily-card"><div class="empty">No hay programación para esa fecha.</div></div>`;
-      } else {
-        filtrados.forEach(item => {
-          html += `
-            <div class="daily-card">
-              <div class="day-card-title">${escapeHtml(item.dia)} · ${escapeHtml(item.fecha)}</div>
-              <div><strong>Lugar:</strong> ${escapeHtml(item.destino)}</div>
-              <div style="margin-top:6px;"><strong>Pasajeros:</strong> ${escapeHtml(item.pasajeros)}</div>
-
-              <hr class="separator">
-
-              <div class="trip-badge">Salida</div>
-              <div><strong>Hora salida:</strong> ${escapeHtml(item.horaSalida)}</div>
-              <div><strong>Chofer salida:</strong> ${escapeHtml(item.choferSalida)}</div>
-              <div><strong>Móvil salida:</strong> ${escapeHtml(item.movilSalida)} (${escapeHtml(item.patenteSalida)})</div>
-
-              <hr class="separator">
-
-              <div class="trip-badge return">Retorno</div>
-              <div><strong>Hora retorno:</strong> ${escapeHtml(item.horaRetorno)}</div>
-              <div><strong>Chofer retorno:</strong> ${escapeHtml(item.choferRetorno)}</div>
-              <div><strong>Móvil retorno:</strong> ${escapeHtml(item.movilRetorno)} (${escapeHtml(item.patenteRetorno)})</div>
-
-              <hr class="separator">
-
-              <div><strong>Observaciones:</strong> ${escapeHtml(item.observaciones || "-")}</div>
-
-              <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
-                <button class="btn btn-secondary" onclick="showTripDetail('${item.id}')">Ver detalle</button>
-                ${isAdmin() ? `
-                  <button class="btn btn-secondary" onclick="editMovil('${item.id}')">Modificar</button>
-                  <button class="btn btn-danger" onclick="deleteMovil('${item.id}')">Eliminar</button>
-                ` : ``}
-              </div>
-            </div>
-          `;
-        });
-      }
-
-      html += `</div></div>`;
-      container.innerHTML = html;
+    html += `<td class="slot-col"><div class="cell-wrap">`;
+    if (pmItems.length) {
+      pmItems.forEach(cellItem => {
+        html += renderTripChip(cellItem);
+      });
+    } else {
+      html += `<div class="empty-cell"></div>`;
     }
+    html += `</div></td>`;
+
+    html += `</tr>`;
+  });
+
+  if (!hayDatos) {
+    html += `
+      <tr>
+        <td class="driver-col sticky-left">Sin datos</td>
+        <td colspan="2" style="padding:16px;color:#6b7280;">
+          No hay programación para la fecha seleccionada.
+        </td>
+      </tr>
+    `;
+  }
+
+  html += `</tbody></table>`;
+  container.innerHTML = html;
+}
 
     function renderWeeklyTable(container) {
       const patentes = getPatentesOrdenadas();
@@ -924,6 +951,8 @@
       return items.sort((a, b) => String(a.hora || "").localeCompare(String(b.hora || "")));
     }
 
+    
+    
     function getBlockByTime(timeText) {
       const text = String(timeText || "").trim();
       const match = text.match(/^(\d{2}):(\d{2})/);
@@ -1020,6 +1049,61 @@
 
       return "";
     }
+
+    function getItemsForDailyCell(patente, selectedDate, bloque) {
+  const items = [];
+
+  programaciones.forEach(item => {
+    if (String(getItemDateISO(item)) !== String(selectedDate)) return;
+
+    const patenteSalida = String(item.patenteSalida || "").trim().toUpperCase();
+    const patenteRetorno = String(item.patenteRetorno || "").trim().toUpperCase();
+
+    if (patenteSalida === patente && getBlockByTime(item.horaSalida) === bloque) {
+      items.push({
+        id: item.id,
+        tipo: "salida",
+        hora: item.horaSalida,
+        destino: item.destino,
+        patente: item.patenteSalida,
+        movil: item.movilSalida,
+        chofer: item.choferSalida,
+        item
+      });
+    }
+
+    if (patenteRetorno === patente && getBlockByTime(item.horaRetorno) === bloque) {
+      items.push({
+        id: item.id,
+        tipo: "retorno",
+        hora: item.horaRetorno,
+        destino: item.destino,
+        patente: item.patenteRetorno,
+        movil: item.movilRetorno,
+        chofer: item.choferRetorno,
+        item
+      });
+    }
+  });
+
+  return items.sort((a, b) => String(a.hora || "").localeCompare(String(b.hora || "")));
+}
+
+function formatDateDisplayFromISO(isoDate) {
+  if (!isoDate) return "";
+  const parts = String(isoDate).split("-");
+  if (parts.length !== 3) return isoDate;
+  return `${parts[2]}-${parts[1]}-${parts[0]}`;
+}
+
+function getDayNameFromISO(isoDate) {
+  if (!isoDate) return "";
+
+  const [year, month, day] = isoDate.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+  const dias = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+  return dias[date.getDay()] || "";
+}
 
     function openMovilModal() {
       document.getElementById("movilModalTitle").textContent = "Nueva programación";
