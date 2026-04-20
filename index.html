@@ -620,8 +620,8 @@
             </div>
 
             <div>
-              <label>Chofer salida</label>
-              <select id="movilChoferSalida" required>
+<label>Chofer salida</label>
+<select id="movilChoferSalida" required onchange="setPendienteIfNeeded('movilChoferSalida','movilSalida','movilPatenteSalida')">
 <option value="">Seleccione</option>
 <option value="Pendiente">Pendiente</option>
 <option>Hector Gomez Morales</option>
@@ -668,7 +668,7 @@
 
             <div>
               <label>Chofer retorno</label>
-              <select id="movilChoferRetorno" required>
+              <select id="movilChoferRetorno" required onchange="setPendienteIfNeeded('movilChoferRetorno','movilRetorno','movilPatenteRetorno')">
 <option value="">Seleccione</option>
 <option value="Pendiente">Pendiente</option>
 <option>Hector Gomez Morales</option>
@@ -746,7 +746,7 @@
           <div class="grid-2">
             <div>
               <label>Chofer salida</label>
-              <select id="approveChoferSalida" required>
+              <select id="approveChoferSalida" required onchange="setPendienteIfNeeded('approveChoferSalida','approveMovilSalida','approvePatenteSalida')">
 <option value="">Seleccione</option>
 <option value="Pendiente">Pendiente</option>
 <option>Hector Gomez Morales</option>
@@ -788,7 +788,7 @@
           <div class="grid-2">
             <div>
               <label>Chofer retorno</label>
-              <select id="approveChoferRetorno" required>
+             <select id="approveChoferRetorno" required onchange="setPendienteIfNeeded('approveChoferRetorno','approveMovilRetorno','approvePatenteRetorno')">
 <option value="">Seleccione</option>
 <option value="Pendiente">Pendiente</option>
 <option>Hector Gomez Morales</option>
@@ -1631,7 +1631,7 @@ const MOVILES_PATENTES = {
       }
     }
 
-    function setPendienteIfNeeded(choferId, movilId, patenteId) {
+function setPendienteIfNeeded(choferId, movilId, patenteId) {
   const chofer = document.getElementById(choferId).value;
 
   if (chofer === "Pendiente") {
