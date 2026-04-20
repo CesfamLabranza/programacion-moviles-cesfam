@@ -14,6 +14,7 @@
       --primary:#2563eb;
       --danger:#dc2626;
       --success:#16a34a;
+      --warning:#d97706;
       --header:#eef2f7;
       --chip:#eef4ff;
       --chip-border:#c7d7ff;
@@ -222,35 +223,6 @@
       color:#374151;
     }
 
-    .daily-wrapper{
-      width:100%;
-      display:flex;
-      justify-content:center;
-    }
-
-    .daily-board{
-      width:100%;
-      max-width:1100px;
-      display:grid;
-      grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));
-      gap:16px;
-    }
-
-    .daily-card{
-      background:#fff;
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:16px;
-    }
-
-    .day-card-title{
-      font-size:18px;
-      font-weight:bold;
-      margin:0 0 12px 0;
-      padding-bottom:8px;
-      border-bottom:1px solid #e5e7eb;
-    }
-
     .btn{
       border:none;
       border-radius:10px;
@@ -272,6 +244,11 @@
 
     .btn-danger{
       background:var(--danger);
+      color:#fff;
+    }
+
+    .btn-warning{
+      background:#f59e0b;
       color:#fff;
     }
 
@@ -430,10 +407,59 @@
       margin-bottom:6px;
     }
 
-    hr.separator{
-      border:none;
-      border-top:1px solid #e5e7eb;
-      margin:18px 0;
+    .status-pill{
+      display:inline-block;
+      padding:5px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:bold;
+      white-space:nowrap;
+    }
+
+    .status-pill.pendiente{
+      background:#fef3c7;
+      color:#92400e;
+    }
+
+    .status-pill.aprobada{
+      background:#dcfce7;
+      color:#166534;
+    }
+
+    .status-pill.rechazada{
+      background:#fee2e2;
+      color:#991b1b;
+    }
+
+    .solicitudes-table-wrap{
+      width:100%;
+      overflow-x:auto;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:#fff;
+    }
+
+    .solicitudes-table{
+      width:100%;
+      min-width:1300px;
+      border-collapse:separate;
+      border-spacing:0;
+    }
+
+    .solicitudes-table th,
+    .solicitudes-table td{
+      border-right:1px solid var(--line);
+      border-bottom:1px solid var(--line);
+      padding:10px;
+      vertical-align:top;
+      background:#fff;
+      font-size:14px;
+    }
+
+    .solicitudes-table th{
+      background:var(--header);
+      font-weight:bold;
+      text-align:center;
     }
 
     @keyframes spin{
@@ -474,22 +500,35 @@
     <div class="panel topbar">
       <div>
         <h1 style="margin:0;">Programación semanal de móviles</h1>
-        <p style="margin:8px 0 0;color:#6b7280;">Planificación de salidas y retornos del establecimiento.</p>
+        <p style="margin:8px 0 0;color:#6b7280;">Planificación de salidas, retornos y revisión de solicitudes del establecimiento.</p>
       </div>
 
       <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        <select id="moduleView" onchange="toggleModuleView()" style="width:170px;">
+          <option value="programacion">Programación</option>
+          <option value="solicitudes">Solicitudes</option>
+        </select>
+
         <select id="viewMode" onchange="updateViewControls(); renderCalendar()" style="width:160px;">
           <option value="semanal">Vista semanal</option>
           <option value="diaria">Vista diaria</option>
         </select>
 
         <input type="date" id="dayFilter" style="width:180px;" onchange="renderCalendar()">
+
+        <select id="solicitudEstadoFilter" class="hidden" onchange="loadSolicitudes()" style="width:180px;">
+          <option value="">Todas</option>
+          <option value="Pendiente">Pendientes</option>
+          <option value="Aprobada">Aprobadas</option>
+          <option value="Rechazada">Rechazadas</option>
+        </select>
       </div>
 
       <div class="toolbar">
         <input type="week" id="weekFilter" style="min-width:180px;" onchange="loadMoviles()" />
-        <button class="btn btn-secondary" onclick="goToCurrentWeek()">Semana actual</button>
-        <button class="btn btn-secondary" onclick="loadMoviles()">Actualizar</button>
+        <button id="btnCurrentWeek" class="btn btn-secondary" onclick="goToCurrentWeek()">Semana actual</button>
+        <button id="btnRefreshProgramacion" class="btn btn-secondary" onclick="loadMoviles()">Actualizar</button>
+        <button id="btnRefreshSolicitudes" class="btn btn-secondary hidden" onclick="loadSolicitudes()">Actualizar solicitudes</button>
         <button id="newButton" class="btn btn-primary hidden" onclick="openMovilModal()">+ Nueva programación</button>
       </div>
 
@@ -504,8 +543,21 @@
       <div style="margin-top:8px;">Cargando programación...</div>
     </div>
 
-    <div class="calendar-wrap">
-      <div id="calendarContainer"></div>
+    <div id="loadingSolicitudes" class="panel loading-box hidden">
+      <div class="spinner"></div>
+      <div style="margin-top:8px;">Cargando solicitudes...</div>
+    </div>
+
+    <div id="programacionSection">
+      <div class="calendar-wrap">
+        <div id="calendarContainer"></div>
+      </div>
+    </div>
+
+    <div id="solicitudesSection" class="hidden">
+      <div class="solicitudes-table-wrap">
+        <div id="solicitudesContainer"></div>
+      </div>
     </div>
   </div>
 
@@ -630,11 +682,96 @@
 
   <div id="detailModalBackdrop" class="modal-backdrop hidden">
     <div class="modal">
-      <h2 class="section-title" style="margin-top:0;">Detalle de programación</h2>
+      <h2 class="section-title" style="margin-top:0;">Detalle</h2>
       <div id="detailModalBody"></div>
       <div class="modal-actions">
         <button type="button" class="btn btn-secondary" onclick="closeDetailModal()">Cerrar</button>
       </div>
+    </div>
+  </div>
+
+  <div id="approveModalBackdrop" class="modal-backdrop hidden">
+    <div class="modal">
+      <h2 class="section-title" style="margin-top:0;">Aprobar solicitud</h2>
+      <p class="section-subtitle">Ingrese la asignación del móvil y chofer para convertir la solicitud en programación.</p>
+
+      <form id="approveForm" onsubmit="approveSolicitud(event)">
+        <input type="hidden" id="approveSolicitudId" />
+
+        <div class="block-card salida">
+          <div class="trip-badge">Salida</div>
+          <h3 class="block-heading">Asignación de salida</h3>
+
+          <div class="grid-2">
+            <div>
+              <label>Chofer salida</label>
+              <input type="text" id="approveChoferSalida" required />
+            </div>
+
+            <div>
+              <label>Móvil salida</label>
+              <input type="text" id="approveMovilSalida" required />
+            </div>
+
+            <div>
+              <label>Patente salida</label>
+              <input type="text" id="approvePatenteSalida" required />
+            </div>
+          </div>
+        </div>
+
+        <div class="block-card retorno">
+          <div class="trip-badge return">Retorno</div>
+          <h3 class="block-heading">Asignación de retorno</h3>
+
+          <div class="grid-2">
+            <div>
+              <label>Chofer retorno</label>
+              <input type="text" id="approveChoferRetorno" required />
+            </div>
+
+            <div>
+              <label>Móvil retorno</label>
+              <input type="text" id="approveMovilRetorno" required />
+            </div>
+
+            <div>
+              <label>Patente retorno</label>
+              <input type="text" id="approvePatenteRetorno" required />
+            </div>
+          </div>
+        </div>
+
+        <div id="approveFormError" class="error-text hidden"></div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeApproveModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Aprobar solicitud</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="rejectModalBackdrop" class="modal-backdrop hidden">
+    <div class="modal" style="max-width:700px;">
+      <h2 class="section-title" style="margin-top:0;">Rechazar solicitud</h2>
+      <p class="section-subtitle">Ingrese un motivo de rechazo.</p>
+
+      <form id="rejectForm" onsubmit="rejectSolicitud(event)">
+        <input type="hidden" id="rejectSolicitudId" />
+
+        <div>
+          <label>Motivo rechazo</label>
+          <textarea id="rejectMotivo" required></textarea>
+        </div>
+
+        <div id="rejectFormError" class="error-text hidden"></div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeRejectModal()">Cancelar</button>
+          <button type="submit" class="btn btn-danger">Rechazar solicitud</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -643,6 +780,7 @@
 
     let currentUser = null;
     let programaciones = [];
+    let solicitudes = [];
 
     const DIAS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
     const BLOQUES = ["AM", "PM"];
@@ -714,7 +852,65 @@
       }
 
       updateViewControls();
+      toggleModuleView();
       await loadMoviles();
+    }
+
+    function toggleModuleView() {
+      const module = document.getElementById("moduleView").value;
+      const programacionSection = document.getElementById("programacionSection");
+      const solicitudesSection = document.getElementById("solicitudesSection");
+
+      const weekFilter = document.getElementById("weekFilter");
+      const dayFilter = document.getElementById("dayFilter");
+      const viewMode = document.getElementById("viewMode");
+      const solicitudEstadoFilter = document.getElementById("solicitudEstadoFilter");
+      const btnCurrentWeek = document.getElementById("btnCurrentWeek");
+      const btnRefreshProgramacion = document.getElementById("btnRefreshProgramacion");
+      const btnRefreshSolicitudes = document.getElementById("btnRefreshSolicitudes");
+      const newButton = document.getElementById("newButton");
+
+      if (module === "solicitudes") {
+        programacionSection.classList.add("hidden");
+        solicitudesSection.classList.remove("hidden");
+
+        weekFilter.classList.add("hidden");
+        dayFilter.classList.add("hidden");
+        viewMode.classList.add("hidden");
+        btnCurrentWeek.classList.add("hidden");
+        btnRefreshProgramacion.classList.add("hidden");
+
+        if (isAdmin()) {
+          solicitudEstadoFilter.classList.remove("hidden");
+          btnRefreshSolicitudes.classList.remove("hidden");
+        }
+
+        newButton.classList.add("hidden");
+
+        if (isAdmin()) {
+          loadSolicitudes();
+        } else {
+          document.getElementById("solicitudesContainer").innerHTML = `
+            <div style="padding:18px;color:#dc2626;">Solo un administrador puede revisar solicitudes.</div>
+          `;
+        }
+      } else {
+        solicitudesSection.classList.add("hidden");
+        programacionSection.classList.remove("hidden");
+
+        viewMode.classList.remove("hidden");
+        btnCurrentWeek.classList.remove("hidden");
+        btnRefreshProgramacion.classList.remove("hidden");
+        solicitudEstadoFilter.classList.add("hidden");
+        btnRefreshSolicitudes.classList.add("hidden");
+
+        if (isAdmin()) {
+          newButton.classList.remove("hidden");
+        }
+
+        updateViewControls();
+        renderCalendar();
+      }
     }
 
     async function loadMoviles() {
@@ -751,98 +947,134 @@
       }
     }
 
-function renderCalendar() {
-  const container = document.getElementById("calendarContainer");
-  const mode = document.getElementById("viewMode").value;
-  const selectedDate = document.getElementById("dayFilter").value;
+    async function loadSolicitudes() {
+      if (!isAdmin()) return;
 
-  if (mode === "diaria") {
-    renderDailyTable(selectedDate, container);
-    return;
-  }
+      const estado = document.getElementById("solicitudEstadoFilter").value || "";
+      const loading = document.getElementById("loadingSolicitudes");
+      const container = document.getElementById("solicitudesContainer");
 
-  renderWeeklyTable(container);
-}
+      loading.classList.remove("hidden");
+      container.innerHTML = "";
 
-function renderDailyTable(selectedDate, container) {
-  if (!selectedDate) {
-    container.innerHTML = `
-      <div class="panel" style="padding:18px;color:#6b7280;">
-        Seleccione una fecha.
-      </div>
-    `;
-    return;
-  }
+      try {
+        const res = await fetch(API, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "getSolicitudesMoviles",
+            user: currentUser,
+            estado: estado
+          })
+        });
 
-  const patentes = getPatentesOrdenadas();
-  const fechaTexto = formatDateDisplayFromISO(selectedDate);
-  const diaTexto = getDayNameFromISO(selectedDate);
+        const data = await res.json();
 
-  let html = `<table class="schedule-table">`;
+        if (!data.success) {
+          container.innerHTML = `<div style="padding:18px;color:#dc2626;">${escapeHtml(data.message || "No fue posible obtener las solicitudes.")}</div>`;
+          return;
+        }
 
-  html += `<thead>`;
-  html += `<tr>`;
-  html += `<th class="sticky-left driver-col" rowspan="2">Patente móvil</th>`;
-  html += `<th colspan="2">${escapeHtml(diaTexto)} · ${escapeHtml(fechaTexto)}</th>`;
-  html += `</tr>`;
-  html += `<tr>`;
-  html += `<th class="slot-col">MAÑANA (AM)</th>`;
-  html += `<th class="slot-col">TARDE (PM)</th>`;
-  html += `</tr>`;
-  html += `</thead>`;
-
-  html += `<tbody>`;
-
-  let hayDatos = false;
-
-  patentes.forEach(patente => {
-    const amItems = getItemsForDailyCell(patente, selectedDate, "AM");
-    const pmItems = getItemsForDailyCell(patente, selectedDate, "PM");
-
-    if (!amItems.length && !pmItems.length) return;
-
-    hayDatos = true;
-
-    html += `<tr>`;
-    html += `<td class="driver-col sticky-left">${escapeHtml(patente)}</td>`;
-
-    html += `<td class="slot-col"><div class="cell-wrap">`;
-    if (amItems.length) {
-      amItems.forEach(cellItem => {
-        html += renderTripChip(cellItem);
-      });
-    } else {
-      html += `<div class="empty-cell"></div>`;
+        solicitudes = data.solicitudes || [];
+        renderSolicitudes();
+      } catch (error) {
+        container.innerHTML = `<div style="padding:18px;color:#dc2626;">No fue posible conectar con el sistema.</div>`;
+      } finally {
+        loading.classList.add("hidden");
+      }
     }
-    html += `</div></td>`;
 
-    html += `<td class="slot-col"><div class="cell-wrap">`;
-    if (pmItems.length) {
-      pmItems.forEach(cellItem => {
-        html += renderTripChip(cellItem);
-      });
-    } else {
-      html += `<div class="empty-cell"></div>`;
+    function renderCalendar() {
+      const container = document.getElementById("calendarContainer");
+      const mode = document.getElementById("viewMode").value;
+      const selectedDate = document.getElementById("dayFilter").value;
+
+      if (mode === "diaria") {
+        renderDailyTable(selectedDate, container);
+        return;
+      }
+
+      renderWeeklyTable(container);
     }
-    html += `</div></td>`;
 
-    html += `</tr>`;
-  });
+    function renderDailyTable(selectedDate, container) {
+      if (!selectedDate) {
+        container.innerHTML = `
+          <div class="panel" style="padding:18px;color:#6b7280;">
+            Seleccione una fecha.
+          </div>
+        `;
+        return;
+      }
 
-  if (!hayDatos) {
-    html += `
-      <tr>
-        <td class="driver-col sticky-left">Sin datos</td>
-        <td colspan="2" style="padding:16px;color:#6b7280;">
-          No hay programación para la fecha seleccionada.
-        </td>
-      </tr>
-    `;
-  }
+      const patentes = getPatentesOrdenadas();
+      const fechaTexto = formatDateDisplayFromISO(selectedDate);
+      const diaTexto = getDayNameFromISO(selectedDate);
 
-  html += `</tbody></table>`;
-  container.innerHTML = html;
-}
+      let html = `<table class="schedule-table">`;
+
+      html += `<thead>`;
+      html += `<tr>`;
+      html += `<th class="sticky-left driver-col" rowspan="2">Patente móvil</th>`;
+      html += `<th colspan="2">${escapeHtml(diaTexto)} · ${escapeHtml(fechaTexto)}</th>`;
+      html += `</tr>`;
+      html += `<tr>`;
+      html += `<th class="slot-col">MAÑANA (AM)</th>`;
+      html += `<th class="slot-col">TARDE (PM)</th>`;
+      html += `</tr>`;
+      html += `</thead>`;
+
+      html += `<tbody>`;
+
+      let hayDatos = false;
+
+      patentes.forEach(patente => {
+        const amItems = getItemsForDailyCell(patente, selectedDate, "AM");
+        const pmItems = getItemsForDailyCell(patente, selectedDate, "PM");
+
+        if (!amItems.length && !pmItems.length) return;
+
+        hayDatos = true;
+
+        html += `<tr>`;
+        html += `<td class="driver-col sticky-left">${escapeHtml(patente)}</td>`;
+
+        html += `<td class="slot-col"><div class="cell-wrap">`;
+        if (amItems.length) {
+          amItems.forEach(cellItem => {
+            html += renderTripChip(cellItem);
+          });
+        } else {
+          html += `<div class="empty-cell"></div>`;
+        }
+        html += `</div></td>`;
+
+        html += `<td class="slot-col"><div class="cell-wrap">`;
+        if (pmItems.length) {
+          pmItems.forEach(cellItem => {
+            html += renderTripChip(cellItem);
+          });
+        } else {
+          html += `<div class="empty-cell"></div>`;
+        }
+        html += `</div></td>`;
+
+        html += `</tr>`;
+      });
+
+      if (!hayDatos) {
+        html += `
+          <tr>
+            <td class="driver-col sticky-left">Sin datos</td>
+            <td colspan="2" style="padding:16px;color:#6b7280;">
+              No hay programación para la fecha seleccionada.
+            </td>
+          </tr>
+        `;
+      }
+
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    }
 
     function renderWeeklyTable(container) {
       const patentes = getPatentesOrdenadas();
@@ -898,6 +1130,73 @@ function renderDailyTable(selectedDate, container) {
       container.innerHTML = html;
     }
 
+    function renderSolicitudes() {
+      const container = document.getElementById("solicitudesContainer");
+
+      if (!solicitudes.length) {
+        container.innerHTML = `<div style="padding:18px;color:#6b7280;">No hay solicitudes para mostrar.</div>`;
+        return;
+      }
+
+      let html = `
+        <table class="solicitudes-table">
+          <thead>
+            <tr>
+              <th>Estado</th>
+              <th>Fecha solicitud</th>
+              <th>Solicitante</th>
+              <th>Unidad</th>
+              <th>Fecha traslado</th>
+              <th>Horario</th>
+              <th>Destino</th>
+              <th>Pasajeros</th>
+              <th>Observaciones</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      solicitudes.forEach(item => {
+        html += `
+          <tr>
+            <td>${renderEstadoSolicitud(item.estado)}</td>
+            <td>${escapeHtml(item.fechaSolicitud || "-")}</td>
+            <td>
+              <strong>${escapeHtml(item.solicitanteNombre || "-")}</strong><br>
+              <span style="font-size:12px;color:#6b7280;">${escapeHtml(item.correoSolicitante || item.telefonoSolicitante || "")}</span>
+            </td>
+            <td>${escapeHtml(item.unidadSolicitante || "-")}</td>
+            <td>${escapeHtml(item.dia || "")} ${escapeHtml(item.fecha || "")}</td>
+            <td>${escapeHtml(item.horaSalida || "-")} - ${escapeHtml(item.horaRetorno || "-")}</td>
+            <td>${escapeHtml(item.destino || "-")}</td>
+            <td>${escapeHtml(item.pasajeros || "-")}</td>
+            <td>${escapeHtml(item.observaciones || "-")}</td>
+            <td>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="btn btn-secondary" onclick="showSolicitudDetail('${item.id}')">Ver</button>
+                ${item.estado === "Pendiente" ? `
+                  <button class="btn btn-primary" onclick="openApproveModal('${item.id}')">Aprobar</button>
+                  <button class="btn btn-danger" onclick="openRejectModal('${item.id}')">Rechazar</button>
+                ` : ``}
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    }
+
+    function renderEstadoSolicitud(estado) {
+      const value = String(estado || "").toLowerCase();
+      if (value === "pendiente") return `<span class="status-pill pendiente">Pendiente</span>`;
+      if (value === "aprobada") return `<span class="status-pill aprobada">Aprobada</span>`;
+      if (value === "rechazada") return `<span class="status-pill rechazada">Rechazada</span>`;
+      return escapeHtml(estado || "-");
+    }
+
     function getPatentesOrdenadas() {
       const set = new Set();
 
@@ -951,8 +1250,45 @@ function renderDailyTable(selectedDate, container) {
       return items.sort((a, b) => String(a.hora || "").localeCompare(String(b.hora || "")));
     }
 
-    
-    
+    function getItemsForDailyCell(patente, selectedDate, bloque) {
+      const items = [];
+
+      programaciones.forEach(item => {
+        if (String(getItemDateISO(item)) !== String(selectedDate)) return;
+
+        const patenteSalida = String(item.patenteSalida || "").trim().toUpperCase();
+        const patenteRetorno = String(item.patenteRetorno || "").trim().toUpperCase();
+
+        if (patenteSalida === patente && getBlockByTime(item.horaSalida) === bloque) {
+          items.push({
+            id: item.id,
+            tipo: "salida",
+            hora: item.horaSalida,
+            destino: item.destino,
+            patente: item.patenteSalida,
+            movil: item.movilSalida,
+            chofer: item.choferSalida,
+            item
+          });
+        }
+
+        if (patenteRetorno === patente && getBlockByTime(item.horaRetorno) === bloque) {
+          items.push({
+            id: item.id,
+            tipo: "retorno",
+            hora: item.horaRetorno,
+            destino: item.destino,
+            patente: item.patenteRetorno,
+            movil: item.movilRetorno,
+            chofer: item.choferRetorno,
+            item
+          });
+        }
+      });
+
+      return items.sort((a, b) => String(a.hora || "").localeCompare(String(b.hora || "")));
+    }
+
     function getBlockByTime(timeText) {
       const text = String(timeText || "").trim();
       const match = text.match(/^(\d{2}):(\d{2})/);
@@ -1029,6 +1365,48 @@ function renderDailyTable(selectedDate, container) {
       document.getElementById("detailModalBackdrop").classList.remove("hidden");
     }
 
+    function showSolicitudDetail(id) {
+      const item = solicitudes.find(x => String(x.id) === String(id));
+      if (!item) return;
+
+      const body = document.getElementById("detailModalBody");
+      body.innerHTML = `
+        <div class="detail-grid">
+          <div class="detail-box">
+            <h4>Solicitante</h4>
+            <div class="detail-line"><strong>Nombre:</strong> ${escapeHtml(item.solicitanteNombre || "-")}</div>
+            <div class="detail-line"><strong>Unidad:</strong> ${escapeHtml(item.unidadSolicitante || "-")}</div>
+            <div class="detail-line"><strong>Teléfono:</strong> ${escapeHtml(item.telefonoSolicitante || "-")}</div>
+            <div class="detail-line"><strong>Correo:</strong> ${escapeHtml(item.correoSolicitante || "-")}</div>
+          </div>
+
+          <div class="detail-box">
+            <h4>Traslado solicitado</h4>
+            <div class="detail-line"><strong>Semana:</strong> ${escapeHtml(item.semana || "-")}</div>
+            <div class="detail-line"><strong>Fecha:</strong> ${escapeHtml(item.fecha || "-")}</div>
+            <div class="detail-line"><strong>Día:</strong> ${escapeHtml(item.dia || "-")}</div>
+            <div class="detail-line"><strong>Hora salida:</strong> ${escapeHtml(item.horaSalida || "-")}</div>
+            <div class="detail-line"><strong>Hora retorno:</strong> ${escapeHtml(item.horaRetorno || "-")}</div>
+            <div class="detail-line"><strong>Destino:</strong> ${escapeHtml(item.destino || "-")}</div>
+            <div class="detail-line"><strong>Pasajeros:</strong> ${escapeHtml(item.pasajeros || "-")}</div>
+          </div>
+
+          <div class="detail-box" style="grid-column:1 / -1;">
+            <h4>Estado de la solicitud</h4>
+            <div class="detail-line"><strong>Estado:</strong> ${escapeHtml(item.estado || "-")}</div>
+            <div class="detail-line"><strong>Fecha solicitud:</strong> ${escapeHtml(item.fechaSolicitud || "-")}</div>
+            <div class="detail-line"><strong>Usuario revisión:</strong> ${escapeHtml(item.usuarioRevision || "-")}</div>
+            <div class="detail-line"><strong>Fecha revisión:</strong> ${escapeHtml(item.fechaRevision || "-")}</div>
+            <div class="detail-line"><strong>Motivo rechazo:</strong> ${escapeHtml(item.motivoRechazo || "-")}</div>
+            <div class="detail-line"><strong>ID programación:</strong> ${escapeHtml(item.idProgramacion || "-")}</div>
+            <div class="detail-line"><strong>Observaciones:</strong> ${escapeHtml(item.observaciones || "-")}</div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById("detailModalBackdrop").classList.remove("hidden");
+    }
+
     function closeDetailModal() {
       document.getElementById("detailModalBackdrop").classList.add("hidden");
     }
@@ -1050,60 +1428,21 @@ function renderDailyTable(selectedDate, container) {
       return "";
     }
 
-    function getItemsForDailyCell(patente, selectedDate, bloque) {
-  const items = [];
-
-  programaciones.forEach(item => {
-    if (String(getItemDateISO(item)) !== String(selectedDate)) return;
-
-    const patenteSalida = String(item.patenteSalida || "").trim().toUpperCase();
-    const patenteRetorno = String(item.patenteRetorno || "").trim().toUpperCase();
-
-    if (patenteSalida === patente && getBlockByTime(item.horaSalida) === bloque) {
-      items.push({
-        id: item.id,
-        tipo: "salida",
-        hora: item.horaSalida,
-        destino: item.destino,
-        patente: item.patenteSalida,
-        movil: item.movilSalida,
-        chofer: item.choferSalida,
-        item
-      });
+    function formatDateDisplayFromISO(isoDate) {
+      if (!isoDate) return "";
+      const parts = String(isoDate).split("-");
+      if (parts.length !== 3) return isoDate;
+      return `${parts[2]}-${parts[1]}-${parts[0]}`;
     }
 
-    if (patenteRetorno === patente && getBlockByTime(item.horaRetorno) === bloque) {
-      items.push({
-        id: item.id,
-        tipo: "retorno",
-        hora: item.horaRetorno,
-        destino: item.destino,
-        patente: item.patenteRetorno,
-        movil: item.movilRetorno,
-        chofer: item.choferRetorno,
-        item
-      });
+    function getDayNameFromISO(isoDate) {
+      if (!isoDate) return "";
+
+      const [year, month, day] = isoDate.split("-").map(Number);
+      const date = new Date(year, month - 1, day);
+      const dias = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+      return dias[date.getDay()] || "";
     }
-  });
-
-  return items.sort((a, b) => String(a.hora || "").localeCompare(String(b.hora || "")));
-}
-
-function formatDateDisplayFromISO(isoDate) {
-  if (!isoDate) return "";
-  const parts = String(isoDate).split("-");
-  if (parts.length !== 3) return isoDate;
-  return `${parts[2]}-${parts[1]}-${parts[0]}`;
-}
-
-function getDayNameFromISO(isoDate) {
-  if (!isoDate) return "";
-
-  const [year, month, day] = isoDate.split("-").map(Number);
-  const date = new Date(year, month - 1, day);
-  const dias = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
-  return dias[date.getDay()] || "";
-}
 
     function openMovilModal() {
       document.getElementById("movilModalTitle").textContent = "Nueva programación";
@@ -1142,17 +1481,51 @@ function getDayNameFromISO(isoDate) {
       document.getElementById("movilModalBackdrop").classList.remove("hidden");
     }
 
+    function openApproveModal(id) {
+      const item = solicitudes.find(x => String(x.id) === String(id));
+      if (!item) return;
+
+      document.getElementById("approveForm").reset();
+      document.getElementById("approveSolicitudId").value = item.id;
+      document.getElementById("approveFormError").classList.add("hidden");
+      document.getElementById("approveModalBackdrop").classList.remove("hidden");
+    }
+
+    function closeApproveModal() {
+      document.getElementById("approveModalBackdrop").classList.add("hidden");
+    }
+
+    function openRejectModal(id) {
+      const item = solicitudes.find(x => String(x.id) === String(id));
+      if (!item) return;
+
+      document.getElementById("rejectForm").reset();
+      document.getElementById("rejectSolicitudId").value = item.id;
+      document.getElementById("rejectFormError").classList.add("hidden");
+      document.getElementById("rejectModalBackdrop").classList.remove("hidden");
+    }
+
+    function closeRejectModal() {
+      document.getElementById("rejectModalBackdrop").classList.add("hidden");
+    }
+
     function updateViewControls() {
       const mode = document.getElementById("viewMode").value;
       const dayFilter = document.getElementById("dayFilter");
       const weekFilter = document.getElementById("weekFilter");
 
+      if (document.getElementById("moduleView").value === "solicitudes") {
+        dayFilter.classList.add("hidden");
+        weekFilter.classList.add("hidden");
+        return;
+      }
+
       if (mode === "diaria") {
-        dayFilter.style.display = "inline-block";
-        weekFilter.style.display = "none";
+        dayFilter.classList.remove("hidden");
+        weekFilter.classList.add("hidden");
       } else {
-        dayFilter.style.display = "none";
-        weekFilter.style.display = "inline-block";
+        dayFilter.classList.add("hidden");
+        weekFilter.classList.remove("hidden");
       }
     }
 
@@ -1209,6 +1582,87 @@ function getDayNameFromISO(isoDate) {
 
         closeMovilModal();
         await loadMoviles();
+        alert(data.message);
+      } catch (error) {
+        errorEl.textContent = "No fue posible conectar con el sistema.";
+        errorEl.classList.remove("hidden");
+      }
+    }
+
+    async function approveSolicitud(event) {
+      event.preventDefault();
+
+      const id = document.getElementById("approveSolicitudId").value;
+      const errorEl = document.getElementById("approveFormError");
+      errorEl.classList.add("hidden");
+
+      const asignacion = {
+        choferSalida: document.getElementById("approveChoferSalida").value.trim(),
+        choferRetorno: document.getElementById("approveChoferRetorno").value.trim(),
+        movilSalida: document.getElementById("approveMovilSalida").value.trim(),
+        patenteSalida: document.getElementById("approvePatenteSalida").value.trim(),
+        movilRetorno: document.getElementById("approveMovilRetorno").value.trim(),
+        patenteRetorno: document.getElementById("approvePatenteRetorno").value.trim()
+      };
+
+      try {
+        const res = await fetch(API, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "approveSolicitudMovil",
+            user: currentUser,
+            id: id,
+            asignacion: asignacion
+          })
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+          errorEl.textContent = data.message || "No fue posible aprobar la solicitud.";
+          errorEl.classList.remove("hidden");
+          return;
+        }
+
+        closeApproveModal();
+        await loadSolicitudes();
+        await loadMoviles();
+        alert(data.message);
+      } catch (error) {
+        errorEl.textContent = "No fue posible conectar con el sistema.";
+        errorEl.classList.remove("hidden");
+      }
+    }
+
+    async function rejectSolicitud(event) {
+      event.preventDefault();
+
+      const id = document.getElementById("rejectSolicitudId").value;
+      const motivo = document.getElementById("rejectMotivo").value.trim();
+      const errorEl = document.getElementById("rejectFormError");
+      errorEl.classList.add("hidden");
+
+      try {
+        const res = await fetch(API, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "rejectSolicitudMovil",
+            user: currentUser,
+            id: id,
+            motivo: motivo
+          })
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+          errorEl.textContent = data.message || "No fue posible rechazar la solicitud.";
+          errorEl.classList.remove("hidden");
+          return;
+        }
+
+        closeRejectModal();
+        await loadSolicitudes();
         alert(data.message);
       } catch (error) {
         errorEl.textContent = "No fue posible conectar con el sistema.";
