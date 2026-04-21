@@ -252,6 +252,17 @@
       color:#fff;
     }
 
+    .btn-outline {
+  background: transparent;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+}
+
+.btn-outline:hover {
+  background: var(--primary);
+  color: white;
+}
+    
     input, select, textarea{
       width:100%;
       padding:12px;
@@ -530,8 +541,8 @@
         <button id="btnRefreshProgramacion" class="btn btn-secondary" onclick="loadMoviles()">Actualizar</button>
         <button id="btnRefreshSolicitudes" class="btn btn-secondary hidden" onclick="loadSolicitudes()">Actualizar solicitudes</button>
         <button id="newButton" class="btn btn-primary hidden" onclick="openMovilModal()">+ Nueva programación</button>
-        <button class="btn btn-outline" onclick="abrirFormularioSolicitud()">
-  Solicitar móvil
+<button class="btn btn-primary" onclick="abrirFormularioSolicitud()">
+  + Solicitud de móvil
 </button>
       </div>
 
