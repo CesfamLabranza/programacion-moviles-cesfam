@@ -608,10 +608,18 @@
             </select>
           </div>
 
-          <div>
-            <label>Lugar destino</label>
-            <input type="text" id="movilDestino" required />
-          </div>
+          <div class="grid-1" style="margin-top:14px;">
+  <div>
+    <label>Paradas del recorrido</label>
+    <div id="movilParadasContainer"></div>
+    <button type="button" class="btn btn-secondary" onclick="agregarParadaMovil()">
+      + Agregar parada
+    </button>
+    <div style="margin-top:8px;color:#6b7280;font-size:12px;">
+      Puede registrar varios destinos con su hora correspondiente dentro del mismo viaje.
+    </div>
+  </div>
+</div>
 
           <div>
             <label>Cantidad pasajeros</label>
@@ -1457,7 +1465,11 @@ function getPatentesOrdenadas() {
             <div class="chip-time">${escapeHtml(mainLine)}</div>
             <div class="chip-tag">${escapeHtml(tag)}</div>
           </div>
-          <div class="chip-main">${escapeHtml(cellItem.destino || "Sin destino")}</div>
+          <div class="chip-main">${
+  cellItem.item && Array.isArray(cellItem.item.paradas) && cellItem.item.paradas.length
+    ? escapeHtml(cellItem.item.paradas.map(p => p.destino).join(" → "))
+    : escapeHtml(cellItem.destino || "Sin destino")
+}</div>
           <div class="chip-sub">${escapeHtml(cellItem.chofer || "Sin chofer")}</div>
         </button>
       `;
@@ -1476,6 +1488,16 @@ function getPatentesOrdenadas() {
             <div class="detail-line"><strong>Fecha:</strong> ${escapeHtml(item.fecha || "-")}</div>
             <div class="detail-line"><strong>Semana:</strong> ${escapeHtml(item.semana || "-")}</div>
             <div class="detail-line"><strong>Destino:</strong> ${escapeHtml(item.destino || "-")}</div>
+            <div class="detail-line"><strong>Destino principal:</strong> ${escapeHtml(item.destino || "-")}</div>
+${
+  item.paradas && item.paradas.length
+    ? `<div class="detail-line"><strong>Recorrido:</strong><br>${
+        item.paradas
+          .map(p => `${escapeHtml(p.hora || "-")} - ${escapeHtml(p.destino || "-")}`)
+          .join("<br>")
+      }</div>`
+    : ""
+}
             <div class="detail-line"><strong>Pasajeros:</strong> ${escapeHtml(item.pasajeros || "-")}</div>
             <div class="detail-line"><strong>Observaciones:</strong> ${escapeHtml(item.observaciones || "-")}</div>
           </div>
@@ -1593,44 +1615,45 @@ function getPatentesOrdenadas() {
       return dias[date.getDay()] || "";
     }
 
-    function openMovilModal() {
-      document.getElementById("movilModalTitle").textContent = "Nueva programación";
-      document.getElementById("movilForm").reset();
-      document.getElementById("movilId").value = "";
-      document.getElementById("movilSemana").value = document.getElementById("weekFilter").value || getCurrentWeekValue();
-      document.getElementById("movilPatenteSalida").value = "";
-      document.getElementById("movilPatenteRetorno").value = "";
-      document.getElementById("movilFormError").classList.add("hidden");
-      document.getElementById("movilModalBackdrop").classList.remove("hidden");
-    }
+function openMovilModal() {
+  document.getElementById("movilModalTitle").textContent = "Nueva programación";
+  document.getElementById("movilForm").reset();
+  document.getElementById("movilId").value = "";
+  document.getElementById("movilSemana").value = document.getElementById("weekFilter").value || getCurrentWeekValue();
+  document.getElementById("movilPatenteSalida").value = "";
+  document.getElementById("movilPatenteRetorno").value = "";
+  document.getElementById("movilFormError").classList.add("hidden");
+  resetParadasMovil();
+  document.getElementById("movilModalBackdrop").classList.remove("hidden");
+}
 
     function closeMovilModal() {
       document.getElementById("movilModalBackdrop").classList.add("hidden");
     }
 
-    function editMovil(id) {
-      const item = programaciones.find(x => String(x.id) === String(id));
-      if (!item) return;
+function editMovil(id) {
+  const item = programaciones.find(x => String(x.id) === String(id));
+  if (!item) return;
 
-      document.getElementById("movilModalTitle").textContent = "Modificar programación";
-      document.getElementById("movilId").value = item.id || "";
-      document.getElementById("movilSemana").value = item.semana || "";
-      document.getElementById("movilFecha").value = getItemDateISO(item);
-      document.getElementById("movilDia").value = item.dia || "";
-      document.getElementById("movilHoraSalida").value = item.horaSalida || "";
-      document.getElementById("movilHoraRetorno").value = item.horaRetorno || "";
-      document.getElementById("movilDestino").value = item.destino || "";
-      document.getElementById("movilPasajeros").value = item.pasajeros || "";
-      document.getElementById("movilChoferSalida").value = item.choferSalida || "";
-      document.getElementById("movilChoferRetorno").value = item.choferRetorno || "";
-      document.getElementById("movilSalida").value = item.movilSalida || "";
-      document.getElementById("movilRetorno").value = item.movilRetorno || "";
-      updatePatenteByMovil("movilSalida", "movilPatenteSalida");
-      updatePatenteByMovil("movilRetorno", "movilPatenteRetorno");
-      document.getElementById("movilObservaciones").value = item.observaciones || "";
-      document.getElementById("movilFormError").classList.add("hidden");
-      document.getElementById("movilModalBackdrop").classList.remove("hidden");
-    }
+  document.getElementById("movilModalTitle").textContent = "Modificar programación";
+  document.getElementById("movilId").value = item.id || "";
+  document.getElementById("movilSemana").value = item.semana || "";
+  document.getElementById("movilFecha").value = getItemDateISO(item);
+  document.getElementById("movilDia").value = item.dia || "";
+  document.getElementById("movilHoraSalida").value = item.horaSalida || "";
+  document.getElementById("movilHoraRetorno").value = item.horaRetorno || "";
+  document.getElementById("movilPasajeros").value = item.pasajeros || "";
+  document.getElementById("movilChoferSalida").value = item.choferSalida || "";
+  document.getElementById("movilChoferRetorno").value = item.choferRetorno || "";
+  document.getElementById("movilSalida").value = item.movilSalida || "";
+  document.getElementById("movilRetorno").value = item.movilRetorno || "";
+  updatePatenteByMovil("movilSalida", "movilPatenteSalida");
+  updatePatenteByMovil("movilRetorno", "movilPatenteRetorno");
+  document.getElementById("movilObservaciones").value = item.observaciones || "";
+  cargarParadasMovil(item.paradas || []);
+  document.getElementById("movilFormError").classList.add("hidden");
+  document.getElementById("movilModalBackdrop").classList.remove("hidden");
+}
 
     function openApproveModal(id) {
       const item = solicitudes.find(x => String(x.id) === String(id));
@@ -1697,20 +1720,90 @@ function updatePatenteByMovil(movilId, patenteId) {
   document.getElementById(patenteId).value = patente;
 }
     
-    async function saveMovilProgramacion(event) {
-      event.preventDefault();
+async function saveMovilProgramacion(event) {
+  event.preventDefault();
 
-      const errorEl = document.getElementById("movilFormError");
-      errorEl.classList.add("hidden");
+  const errorEl = document.getElementById("movilFormError");
+  errorEl.classList.add("hidden");
 
-      const horaSalida = document.getElementById("movilHoraSalida").value;
-      const horaRetorno = document.getElementById("movilHoraRetorno").value;
+  const horaSalida = document.getElementById("movilHoraSalida").value;
+  const horaRetorno = document.getElementById("movilHoraRetorno").value;
 
-      if (horaSalida && horaRetorno && horaRetorno < horaSalida) {
-        errorEl.textContent = "La hora de retorno no debe ser menor que la hora de salida.";
-        errorEl.classList.remove("hidden");
-        return;
-      }
+  if (horaSalida && horaRetorno && horaRetorno < horaSalida) {
+    errorEl.textContent = "La hora de retorno no debe ser menor que la hora de salida.";
+    errorEl.classList.remove("hidden");
+    return;
+  }
+
+  const paradas = obtenerParadasMovil();
+
+  if (!paradas.length) {
+    errorEl.textContent = "Debe ingresar al menos una parada del recorrido.";
+    errorEl.classList.remove("hidden");
+    return;
+  }
+
+  if (horaSalida && paradas[0].hora && paradas[0].hora < horaSalida) {
+    errorEl.textContent = "La primera parada no puede ser anterior a la hora de salida.";
+    errorEl.classList.remove("hidden");
+    return;
+  }
+
+  const paradaFueraDeRango = paradas.some(p => {
+    return (horaSalida && p.hora < horaSalida) || (horaRetorno && p.hora > horaRetorno);
+  });
+
+  if (paradaFueraDeRango) {
+    errorEl.textContent = "Las horas de las paradas deben estar entre la hora de salida y la hora de retorno.";
+    errorEl.classList.remove("hidden");
+    return;
+  }
+
+  const payload = {
+    id: document.getElementById("movilId").value.trim(),
+    semana: document.getElementById("movilSemana").value,
+    fecha: document.getElementById("movilFecha").value,
+    dia: document.getElementById("movilDia").value,
+    horaSalida: horaSalida,
+    horaRetorno: horaRetorno,
+    destino: paradas[0].destino,
+    paradas: paradas,
+    pasajeros: document.getElementById("movilPasajeros").value.trim(),
+    choferSalida: document.getElementById("movilChoferSalida").value.trim(),
+    choferRetorno: document.getElementById("movilChoferRetorno").value.trim(),
+    movilSalida: document.getElementById("movilSalida").value.trim(),
+    patenteSalida: document.getElementById("movilPatenteSalida").value.trim(),
+    movilRetorno: document.getElementById("movilRetorno").value.trim(),
+    patenteRetorno: document.getElementById("movilPatenteRetorno").value.trim(),
+    observaciones: document.getElementById("movilObservaciones").value.trim()
+  };
+
+  try {
+    const res = await fetch(API, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "saveMovilProgramacion",
+        user: currentUser,
+        programacion: payload
+      })
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+      errorEl.textContent = data.message || "No fue posible guardar.";
+      errorEl.classList.remove("hidden");
+      return;
+    }
+
+    closeMovilModal();
+    await loadMoviles();
+    alert(data.message);
+  } catch (error) {
+    errorEl.textContent = "No fue posible conectar con el sistema.";
+    errorEl.classList.remove("hidden");
+  }
+}
 
       const payload = {
         id: document.getElementById("movilId").value.trim(),
@@ -1865,6 +1958,60 @@ function updatePatenteByMovil(movilId, patenteId) {
       }
     }
 
+function agregarParadaMovil(destino = "", hora = "") {
+  const container = document.getElementById("movilParadasContainer");
+
+  const row = document.createElement("div");
+  row.className = "grid-2";
+  row.style.marginBottom = "10px";
+
+  row.innerHTML = `
+    <input type="time" class="movilParadaHora" value="${hora}" required />
+    <div style="display:flex; gap:6px;">
+      <input type="text" class="movilParadaDestino" value="${destino}" placeholder="Destino" required />
+      <button type="button" class="btn btn-danger" style="padding:0 12px;" onclick="this.parentElement.parentElement.remove()">✕</button>
+    </div>
+  `;
+
+  container.appendChild(row);
+}
+
+function obtenerParadasMovil() {
+  const paradas = [];
+
+  document.querySelectorAll("#movilParadasContainer > div").forEach(row => {
+    const hora = row.querySelector(".movilParadaHora").value;
+    const destino = row.querySelector(".movilParadaDestino").value.trim();
+
+    if (hora && destino) {
+      paradas.push({ hora, destino });
+    }
+  });
+
+  paradas.sort((a, b) => a.hora.localeCompare(b.hora));
+  return paradas;
+}
+
+function resetParadasMovil() {
+  const container = document.getElementById("movilParadasContainer");
+  container.innerHTML = "";
+  agregarParadaMovil();
+}
+
+function cargarParadasMovil(paradas) {
+  const container = document.getElementById("movilParadasContainer");
+  container.innerHTML = "";
+
+  if (Array.isArray(paradas) && paradas.length) {
+    paradas
+      .slice()
+      .sort((a, b) => String(a.hora || "").localeCompare(String(b.hora || "")))
+      .forEach(p => agregarParadaMovil(p.destino || "", p.hora || ""));
+  } else {
+    agregarParadaMovil();
+  }
+}
+    
     initApp();
   </script>
 </body>
