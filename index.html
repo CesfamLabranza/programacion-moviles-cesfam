@@ -253,7 +253,7 @@
     }
 
     .btn-success{
-      background:var(--success);
+      background:#16a34a;
       color:#fff;
     }
 
@@ -591,27 +591,8 @@
 
         <div class="grid-2">
           <div>
-            <label>Semana</label>
-            <input type="week" id="movilSemana" required />
-          </div>
-
-          <div>
             <label>Fecha</label>
             <input type="date" id="movilFecha" required />
-          </div>
-
-          <div>
-            <label>Día</label>
-            <select id="movilDia" required>
-              <option value="">Seleccione</option>
-              <option>Lunes</option>
-              <option>Martes</option>
-              <option>Miércoles</option>
-              <option>Jueves</option>
-              <option>Viernes</option>
-              <option>Sábado</option>
-              <option>Domingo</option>
-            </select>
           </div>
 
           <div>
@@ -620,27 +601,27 @@
           </div>
 
           <div style="display:flex;align-items:flex-end;color:#6b7280;font-size:13px;">
-            Verifique que la fecha, el día y el recorrido correspondan a la misma programación.
+            La semana y el día se calcularán automáticamente a partir de la fecha.
           </div>
         </div>
 
-<div class="grid-1" style="margin-top:14px;">
-  <div>
-    <label>Destino principal</label>
-    <input type="text" id="movilDestino" required />
-  </div>
+        <div class="grid-1" style="margin-top:14px;">
+          <div>
+            <label>Destino principal</label>
+            <input type="text" id="movilDestino" required />
+          </div>
 
-  <div>
-    <label>Paradas intermedias (opcional)</label>
-    <div id="movilParadasContainer"></div>
-    <button type="button" class="btn btn-secondary" onclick="agregarParadaMovil()">
-      + Agregar parada
-    </button>
-    <div style="margin-top:8px;color:#6b7280;font-size:12px;">
-      Agregue solo si el traslado considera destinos previos antes de llegar al destino principal.
-    </div>
-  </div>
-</div>
+          <div>
+            <label>Paradas intermedias (opcional)</label>
+            <div id="movilParadasContainer"></div>
+            <button type="button" class="btn btn-secondary" onclick="agregarParadaMovil()">
+              + Agregar parada
+            </button>
+            <div style="margin-top:8px;color:#6b7280;font-size:12px;">
+              Agregue solo si el traslado considera destinos previos antes de llegar al destino principal.
+            </div>
+          </div>
+        </div>
 
         <div class="block-card salida">
           <div class="trip-badge">Salida</div>
@@ -889,7 +870,7 @@
   </div>
 
   <script>
-    const API = "https://script.google.com/macros/s/AKfycbzgwWOc0ZymXg6D_5yncrjhxkNRpEZVhGLYm0eC-fsOIMo01Tuoo_tQT7kHFUW6Qnwc/exec";
+    const API = "AQUI_TU_URL_DE_APPS_SCRIPT";
 
     const MOVILES_PATENTES = {
       "Pendiente": "Pendiente",
@@ -967,6 +948,22 @@
     function getCurrentWeekValue() {
       const now = new Date();
       const date = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+      const dayNum = date.getUTCDay() || 7;
+      date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+      const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+      const weekNo = Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+      return `${date.getUTCFullYear()}-W${String(weekNo).padStart(2, "0")}`;
+    }
+
+    function obtenerDia(fechaStr) {
+      const dias = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+      const fecha = new Date(fechaStr + "T00:00:00");
+      return dias[fecha.getDay()];
+    }
+
+    function obtenerSemana(fechaStr) {
+      const fecha = new Date(fechaStr + "T00:00:00");
+      const date = new Date(Date.UTC(fecha.getFullYear(), fecha.getMonth(), fecha.getDate()));
       const dayNum = date.getUTCDay() || 7;
       date.setUTCDate(date.getUTCDate() + 4 - dayNum);
       const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
@@ -1476,9 +1473,9 @@
       const tag = cellItem.tipo === "retorno" ? "Retorno" : "Salida";
       const mainLine = `${cellItem.hora || "--:--"}`;
       const recorridoTexto =
-  cellItem.item && Array.isArray(cellItem.item.paradas) && cellItem.item.paradas.length
-    ? [...cellItem.item.paradas.map(p => p.destino), cellItem.destino].join(" → ")
-    : (cellItem.destino || "Sin destino");
+        cellItem.item && Array.isArray(cellItem.item.paradas) && cellItem.item.paradas.length
+          ? [...cellItem.item.paradas.map(p => p.destino), cellItem.destino].join(" → ")
+          : (cellItem.destino || "Sin destino");
 
       return `
         <button type="button" class="${clase}" onclick="showTripDetail('${cellItem.id}')">
@@ -1507,7 +1504,7 @@
             <div class="detail-line"><strong>Destino principal:</strong> ${escapeHtml(item.destino || "-")}</div>
             ${
               item.paradas && item.paradas.length
-                ? `<div class="detail-line"><strong>Recorrido:</strong><br>${
+                ? `<div class="detail-line"><strong>Paradas intermedias:</strong><br>${
                     item.paradas
                       .map(p => `${escapeHtml(p.hora || "-")} - ${escapeHtml(p.destino || "-")}`)
                       .join("<br>")
@@ -1577,7 +1574,7 @@
             <div class="detail-line"><strong>Destino principal:</strong> ${escapeHtml(item.destino || "-")}</div>
             ${
               item.paradas && item.paradas.length
-                ? `<div class="detail-line"><strong>Recorrido:</strong><br>${
+                ? `<div class="detail-line"><strong>Paradas intermedias:</strong><br>${
                     item.paradas
                       .map(p => `${escapeHtml(p.hora || "-")} - ${escapeHtml(p.destino || "-")}`)
                       .join("<br>")
@@ -1674,10 +1671,10 @@
       return paradas;
     }
 
-function resetParadasMovil() {
-  const container = document.getElementById("movilParadasContainer");
-  container.innerHTML = "";
-}
+    function resetParadasMovil() {
+      const container = document.getElementById("movilParadasContainer");
+      container.innerHTML = "";
+    }
 
     function cargarParadasMovil(paradas) {
       const container = document.getElementById("movilParadasContainer");
@@ -1688,52 +1685,48 @@ function resetParadasMovil() {
           .slice()
           .sort((a, b) => String(a.hora || "").localeCompare(String(b.hora || "")))
           .forEach(p => agregarParadaMovil(p.destino || "", p.hora || ""));
-      } else {
-        agregarParadaMovil();
       }
     }
 
-function openMovilModal() {
-  document.getElementById("movilModalTitle").textContent = "Nueva programación";
-  document.getElementById("movilForm").reset();
-  document.getElementById("movilId").value = "";
-  document.getElementById("movilSemana").value = document.getElementById("weekFilter").value || getCurrentWeekValue();
-  document.getElementById("movilPatenteSalida").value = "";
-  document.getElementById("movilPatenteRetorno").value = "";
-  document.getElementById("movilDestino").value = "";
-  document.getElementById("movilFormError").classList.add("hidden");
-  resetParadasMovil();
-  document.getElementById("movilModalBackdrop").classList.remove("hidden");
-}
+    function openMovilModal() {
+      document.getElementById("movilModalTitle").textContent = "Nueva programación";
+      document.getElementById("movilForm").reset();
+      document.getElementById("movilId").value = "";
+      document.getElementById("movilPatenteSalida").value = "";
+      document.getElementById("movilPatenteRetorno").value = "";
+      document.getElementById("movilDestino").value = "";
+      document.getElementById("movilFecha").value = new Date().toISOString().split("T")[0];
+      document.getElementById("movilFormError").classList.add("hidden");
+      resetParadasMovil();
+      document.getElementById("movilModalBackdrop").classList.remove("hidden");
+    }
 
     function closeMovilModal() {
       document.getElementById("movilModalBackdrop").classList.add("hidden");
     }
 
-function editMovil(id) {
-  const item = programaciones.find(x => String(x.id) === String(id));
-  if (!item) return;
+    function editMovil(id) {
+      const item = programaciones.find(x => String(x.id) === String(id));
+      if (!item) return;
 
-  document.getElementById("movilModalTitle").textContent = "Modificar programación";
-  document.getElementById("movilId").value = item.id || "";
-  document.getElementById("movilSemana").value = item.semana || "";
-  document.getElementById("movilFecha").value = getItemDateISO(item);
-  document.getElementById("movilDia").value = item.dia || "";
-  document.getElementById("movilHoraSalida").value = item.horaSalida || "";
-  document.getElementById("movilHoraRetorno").value = item.horaRetorno || "";
-  document.getElementById("movilPasajeros").value = item.pasajeros || "";
-  document.getElementById("movilDestino").value = item.destino || "";
-  document.getElementById("movilChoferSalida").value = item.choferSalida || "";
-  document.getElementById("movilChoferRetorno").value = item.choferRetorno || "";
-  document.getElementById("movilSalida").value = item.movilSalida || "";
-  document.getElementById("movilRetorno").value = item.movilRetorno || "";
-  updatePatenteByMovil("movilSalida", "movilPatenteSalida");
-  updatePatenteByMovil("movilRetorno", "movilPatenteRetorno");
-  document.getElementById("movilObservaciones").value = item.observaciones || "";
-  cargarParadasMovil(item.paradas || []);
-  document.getElementById("movilFormError").classList.add("hidden");
-  document.getElementById("movilModalBackdrop").classList.remove("hidden");
-}
+      document.getElementById("movilModalTitle").textContent = "Modificar programación";
+      document.getElementById("movilId").value = item.id || "";
+      document.getElementById("movilFecha").value = getItemDateISO(item);
+      document.getElementById("movilHoraSalida").value = item.horaSalida || "";
+      document.getElementById("movilHoraRetorno").value = item.horaRetorno || "";
+      document.getElementById("movilPasajeros").value = item.pasajeros || "";
+      document.getElementById("movilDestino").value = item.destino || "";
+      document.getElementById("movilChoferSalida").value = item.choferSalida || "";
+      document.getElementById("movilChoferRetorno").value = item.choferRetorno || "";
+      document.getElementById("movilSalida").value = item.movilSalida || "";
+      document.getElementById("movilRetorno").value = item.movilRetorno || "";
+      updatePatenteByMovil("movilSalida", "movilPatenteSalida");
+      updatePatenteByMovil("movilRetorno", "movilPatenteRetorno");
+      document.getElementById("movilObservaciones").value = item.observaciones || "";
+      cargarParadasMovil(item.paradas || []);
+      document.getElementById("movilFormError").classList.add("hidden");
+      document.getElementById("movilModalBackdrop").classList.remove("hidden");
+    }
 
     function openApproveModal(id) {
       const item = solicitudes.find(x => String(x.id) === String(id));
@@ -1785,90 +1778,97 @@ function editMovil(id) {
       }
     }
 
-async function saveMovilProgramacion(event) {
-  event.preventDefault();
+    async function saveMovilProgramacion(event) {
+      event.preventDefault();
 
-  const errorEl = document.getElementById("movilFormError");
-  errorEl.classList.add("hidden");
+      const errorEl = document.getElementById("movilFormError");
+      errorEl.classList.add("hidden");
 
-  const horaSalida = document.getElementById("movilHoraSalida").value;
-  const horaRetorno = document.getElementById("movilHoraRetorno").value;
-  const destinoPrincipal = document.getElementById("movilDestino").value.trim();
-  const paradas = obtenerParadasMovil();
+      const fecha = document.getElementById("movilFecha").value;
+      const horaSalida = document.getElementById("movilHoraSalida").value;
+      const horaRetorno = document.getElementById("movilHoraRetorno").value;
+      const destinoPrincipal = document.getElementById("movilDestino").value.trim();
+      const paradas = obtenerParadasMovil();
 
-  if (horaSalida && horaRetorno && horaRetorno < horaSalida) {
-    errorEl.textContent = "La hora de retorno no debe ser menor que la hora de salida.";
-    errorEl.classList.remove("hidden");
-    return;
-  }
+      if (!fecha) {
+        errorEl.textContent = "Debe ingresar la fecha.";
+        errorEl.classList.remove("hidden");
+        return;
+      }
 
-  if (!destinoPrincipal) {
-    errorEl.textContent = "Debe ingresar el destino principal.";
-    errorEl.classList.remove("hidden");
-    return;
-  }
+      if (horaSalida && horaRetorno && horaRetorno < horaSalida) {
+        errorEl.textContent = "La hora de retorno no debe ser menor que la hora de salida.";
+        errorEl.classList.remove("hidden");
+        return;
+      }
 
-  if (paradas.length && horaSalida && paradas[0].hora && paradas[0].hora < horaSalida) {
-    errorEl.textContent = "La primera parada no puede ser anterior a la hora de salida.";
-    errorEl.classList.remove("hidden");
-    return;
-  }
+      if (!destinoPrincipal) {
+        errorEl.textContent = "Debe ingresar el destino principal.";
+        errorEl.classList.remove("hidden");
+        return;
+      }
 
-  const paradaFueraDeRango = paradas.some(p => {
-    return (horaSalida && p.hora < horaSalida) || (horaRetorno && p.hora > horaRetorno);
-  });
+      if (paradas.length && horaSalida && paradas[0].hora && paradas[0].hora < horaSalida) {
+        errorEl.textContent = "La primera parada no puede ser anterior a la hora de salida.";
+        errorEl.classList.remove("hidden");
+        return;
+      }
 
-  if (paradaFueraDeRango) {
-    errorEl.textContent = "Las horas de las paradas deben estar entre la hora de salida y la hora de retorno.";
-    errorEl.classList.remove("hidden");
-    return;
-  }
+      const paradaFueraDeRango = paradas.some(p => {
+        return (horaSalida && p.hora < horaSalida) || (horaRetorno && p.hora > horaRetorno);
+      });
 
-  const payload = {
-    id: document.getElementById("movilId").value.trim(),
-    semana: document.getElementById("movilSemana").value,
-    fecha: document.getElementById("movilFecha").value,
-    dia: document.getElementById("movilDia").value,
-    horaSalida: horaSalida,
-    horaRetorno: horaRetorno,
-    destino: destinoPrincipal,
-    paradas: paradas,
-    pasajeros: document.getElementById("movilPasajeros").value.trim(),
-    choferSalida: document.getElementById("movilChoferSalida").value.trim(),
-    choferRetorno: document.getElementById("movilChoferRetorno").value.trim(),
-    movilSalida: document.getElementById("movilSalida").value.trim(),
-    patenteSalida: document.getElementById("movilPatenteSalida").value.trim(),
-    movilRetorno: document.getElementById("movilRetorno").value.trim(),
-    patenteRetorno: document.getElementById("movilPatenteRetorno").value.trim(),
-    observaciones: document.getElementById("movilObservaciones").value.trim()
-  };
+      if (paradaFueraDeRango) {
+        errorEl.textContent = "Las horas de las paradas deben estar entre la hora de salida y la hora de retorno.";
+        errorEl.classList.remove("hidden");
+        return;
+      }
 
-  try {
-    const res = await fetch(API, {
-      method: "POST",
-      body: JSON.stringify({
-        action: "saveMovilProgramacion",
-        user: currentUser,
-        programacion: payload
-      })
-    });
+      const payload = {
+        id: document.getElementById("movilId").value.trim(),
+        semana: obtenerSemana(fecha),
+        fecha: fecha,
+        dia: obtenerDia(fecha),
+        horaSalida: horaSalida,
+        horaRetorno: horaRetorno,
+        destino: destinoPrincipal,
+        paradas: paradas,
+        pasajeros: document.getElementById("movilPasajeros").value.trim(),
+        choferSalida: document.getElementById("movilChoferSalida").value.trim(),
+        choferRetorno: document.getElementById("movilChoferRetorno").value.trim(),
+        movilSalida: document.getElementById("movilSalida").value.trim(),
+        patenteSalida: document.getElementById("movilPatenteSalida").value.trim(),
+        movilRetorno: document.getElementById("movilRetorno").value.trim(),
+        patenteRetorno: document.getElementById("movilPatenteRetorno").value.trim(),
+        observaciones: document.getElementById("movilObservaciones").value.trim()
+      };
 
-    const data = await res.json();
+      try {
+        const res = await fetch(API, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "saveMovilProgramacion",
+            user: currentUser,
+            programacion: payload
+          })
+        });
 
-    if (!data.success) {
-      errorEl.textContent = data.message || "No fue posible guardar.";
-      errorEl.classList.remove("hidden");
-      return;
+        const data = await res.json();
+
+        if (!data.success) {
+          errorEl.textContent = data.message || "No fue posible guardar.";
+          errorEl.classList.remove("hidden");
+          return;
+        }
+
+        closeMovilModal();
+        await loadMoviles();
+        alert(data.message);
+      } catch (error) {
+        errorEl.textContent = "No fue posible conectar con el sistema.";
+        errorEl.classList.remove("hidden");
+      }
     }
-
-    closeMovilModal();
-    await loadMoviles();
-    alert(data.message);
-  } catch (error) {
-    errorEl.textContent = "No fue posible conectar con el sistema.";
-    errorEl.classList.remove("hidden");
-  }
-}
 
     async function approveSolicitud(event) {
       event.preventDefault();
