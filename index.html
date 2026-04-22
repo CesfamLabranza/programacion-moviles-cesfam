@@ -1476,9 +1476,9 @@
       const tag = cellItem.tipo === "retorno" ? "Retorno" : "Salida";
       const mainLine = `${cellItem.hora || "--:--"}`;
       const recorridoTexto =
-        cellItem.item && Array.isArray(cellItem.item.paradas) && cellItem.item.paradas.length
-          ? cellItem.item.paradas.map(p => p.destino).join(" → ")
-          : (cellItem.destino || "Sin destino");
+  cellItem.item && Array.isArray(cellItem.item.paradas) && cellItem.item.paradas.length
+    ? [...cellItem.item.paradas.map(p => p.destino), cellItem.destino].join(" → ")
+    : (cellItem.destino || "Sin destino");
 
       return `
         <button type="button" class="${clase}" onclick="showTripDetail('${cellItem.id}')">
