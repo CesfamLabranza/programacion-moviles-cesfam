@@ -1786,94 +1786,90 @@ function editMovil(id) {
       }
     }
 
-    async function saveMovilProgramacion(event) {
-      event.preventDefault();
+async function saveMovilProgramacion(event) {
+  event.preventDefault();
 
-      const errorEl = document.getElementById("movilFormError");
-      errorEl.classList.add("hidden");
+  const errorEl = document.getElementById("movilFormError");
+  errorEl.classList.add("hidden");
 
-      const horaSalida = document.getElementById("movilHoraSalida").value;
-      const horaRetorno = document.getElementById("movilHoraRetorno").value;
+  const horaSalida = document.getElementById("movilHoraSalida").value;
+  const horaRetorno = document.getElementById("movilHoraRetorno").value;
+  const destinoPrincipal = document.getElementById("movilDestino").value.trim();
+  const paradas = obtenerParadasMovil();
 
-      if (horaSalida && horaRetorno && horaRetorno < horaSalida) {
-        errorEl.textContent = "La hora de retorno no debe ser menor que la hora de salida.";
-        errorEl.classList.remove("hidden");
-        return;
-      }
+  if (horaSalida && horaRetorno && horaRetorno < horaSalida) {
+    errorEl.textContent = "La hora de retorno no debe ser menor que la hora de salida.";
+    errorEl.classList.remove("hidden");
+    return;
+  }
 
-      const paradas = obtenerParadasMovil();
+  if (!destinoPrincipal) {
+    errorEl.textContent = "Debe ingresar el destino principal.";
+    errorEl.classList.remove("hidden");
+    return;
+  }
 
+  if (paradas.length && horaSalida && paradas[0].hora && paradas[0].hora < horaSalida) {
+    errorEl.textContent = "La primera parada no puede ser anterior a la hora de salida.";
+    errorEl.classList.remove("hidden");
+    return;
+  }
 
+  const paradaFueraDeRango = paradas.some(p => {
+    return (horaSalida && p.hora < horaSalida) || (horaRetorno && p.hora > horaRetorno);
+  });
 
-if (paradas.length && horaSalida && paradas[0].hora && paradas[0].hora < horaSalida) {
-  errorEl.textContent = "La primera parada no puede ser anterior a la hora de salida.";
-  errorEl.classList.remove("hidden");
-  return;
-}
+  if (paradaFueraDeRango) {
+    errorEl.textContent = "Las horas de las paradas deben estar entre la hora de salida y la hora de retorno.";
+    errorEl.classList.remove("hidden");
+    return;
+  }
 
-      const paradaFueraDeRango = paradas.some(p => {
-        return (horaSalida && p.hora < horaSalida) || (horaRetorno && p.hora > horaRetorno);
-      });
+  const payload = {
+    id: document.getElementById("movilId").value.trim(),
+    semana: document.getElementById("movilSemana").value,
+    fecha: document.getElementById("movilFecha").value,
+    dia: document.getElementById("movilDia").value,
+    horaSalida: horaSalida,
+    horaRetorno: horaRetorno,
+    destino: destinoPrincipal,
+    paradas: paradas,
+    pasajeros: document.getElementById("movilPasajeros").value.trim(),
+    choferSalida: document.getElementById("movilChoferSalida").value.trim(),
+    choferRetorno: document.getElementById("movilChoferRetorno").value.trim(),
+    movilSalida: document.getElementById("movilSalida").value.trim(),
+    patenteSalida: document.getElementById("movilPatenteSalida").value.trim(),
+    movilRetorno: document.getElementById("movilRetorno").value.trim(),
+    patenteRetorno: document.getElementById("movilPatenteRetorno").value.trim(),
+    observaciones: document.getElementById("movilObservaciones").value.trim()
+  };
 
-      if (paradaFueraDeRango) {
-        errorEl.textContent = "Las horas de las paradas deben estar entre la hora de salida y la hora de retorno.";
-        errorEl.classList.remove("hidden");
-        return;
-      }
+  try {
+    const res = await fetch(API, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "saveMovilProgramacion",
+        user: currentUser,
+        programacion: payload
+      })
+    });
 
-const destinoPrincipal = document.getElementById("movilDestino").value.trim();
+    const data = await res.json();
 
-if (!destinoPrincipal) {
-  errorEl.textContent = "Debe ingresar el destino principal.";
-  errorEl.classList.remove("hidden");
-  return;
-}
-
-const payload = {
-  id: document.getElementById("movilId").value.trim(),
-  semana: document.getElementById("movilSemana").value,
-  fecha: document.getElementById("movilFecha").value,
-  dia: document.getElementById("movilDia").value,
-  horaSalida: horaSalida,
-  horaRetorno: horaRetorno,
-  destino: destinoPrincipal,
-  paradas: paradas,
-  pasajeros: document.getElementById("movilPasajeros").value.trim(),
-  choferSalida: document.getElementById("movilChoferSalida").value.trim(),
-  choferRetorno: document.getElementById("movilChoferRetorno").value.trim(),
-  movilSalida: document.getElementById("movilSalida").value.trim(),
-  patenteSalida: document.getElementById("movilPatenteSalida").value.trim(),
-  movilRetorno: document.getElementById("movilRetorno").value.trim(),
-  patenteRetorno: document.getElementById("movilPatenteRetorno").value.trim(),
-  observaciones: document.getElementById("movilObservaciones").value.trim()
-};
-
-      try {
-        const res = await fetch(API, {
-          method: "POST",
-          body: JSON.stringify({
-            action: "saveMovilProgramacion",
-            user: currentUser,
-            programacion: payload
-          })
-        });
-
-        const data = await res.json();
-
-        if (!data.success) {
-          errorEl.textContent = data.message || "No fue posible guardar.";
-          errorEl.classList.remove("hidden");
-          return;
-        }
-
-        closeMovilModal();
-        await loadMoviles();
-        alert(data.message);
-      } catch (error) {
-        errorEl.textContent = "No fue posible conectar con el sistema.";
-        errorEl.classList.remove("hidden");
-      }
+    if (!data.success) {
+      errorEl.textContent = data.message || "No fue posible guardar.";
+      errorEl.classList.remove("hidden");
+      return;
     }
+
+    closeMovilModal();
+    await loadMoviles();
+    alert(data.message);
+  } catch (error) {
+    errorEl.textContent = "No fue posible conectar con el sistema.";
+    errorEl.classList.remove("hidden");
+  }
+}
 
     async function approveSolicitud(event) {
       event.preventDefault();
