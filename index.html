@@ -125,9 +125,9 @@
     }
 
     .driver-col{
-      width:180px;
-      min-width:180px;
-      max-width:180px;
+      width:210px;
+      min-width:210px;
+      max-width:210px;
       padding:12px 10px;
       font-weight:bold;
       background:#f9fbff !important;
@@ -252,17 +252,11 @@
       color:#fff;
     }
 
-    .btn-outline {
-  background: transparent;
-  border: 2px solid var(--primary);
-  color: var(--primary);
-}
+    .btn-success{
+      background:var(--success);
+      color:#fff;
+    }
 
-.btn-outline:hover {
-  background: var(--primary);
-  color: white;
-}
-    
     input, select, textarea{
       width:100%;
       padding:12px;
@@ -473,6 +467,20 @@
       text-align:center;
     }
 
+    .parada-remove{
+      border:none;
+      background:#fee2e2;
+      color:#991b1b;
+      border-radius:10px;
+      padding:0 14px;
+      font-weight:bold;
+      cursor:pointer;
+    }
+
+    .parada-remove:hover{
+      background:#fecaca;
+    }
+
     @keyframes spin{
       0%{transform:rotate(0deg)}
       100%{transform:rotate(360deg)}
@@ -493,9 +501,9 @@
       }
 
       .driver-col{
-        width:140px;
-        min-width:140px;
-        max-width:140px;
+        width:160px;
+        min-width:160px;
+        max-width:160px;
       }
 
       .slot-col{
@@ -510,8 +518,8 @@
   <div id="app" class="page hidden">
     <div class="panel topbar">
       <div>
-        <h1 style="margin:0;">Programación semanal de móviles</h1>
-        <p style="margin:8px 0 0;color:#6b7280;">Planificación de salidas, retornos y revisión de solicitudes del establecimiento.</p>
+        <h1 style="margin:0;">Programación de móviles</h1>
+        <p style="margin:8px 0 0;color:#6b7280;">Planificación de salidas, retornos y revisión de solicitudes.</p>
       </div>
 
       <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
@@ -541,9 +549,7 @@
         <button id="btnRefreshProgramacion" class="btn btn-secondary" onclick="loadMoviles()">Actualizar</button>
         <button id="btnRefreshSolicitudes" class="btn btn-secondary hidden" onclick="loadSolicitudes()">Actualizar solicitudes</button>
         <button id="newButton" class="btn btn-primary hidden" onclick="openMovilModal()">+ Nueva programación</button>
-<button class="btn btn-primary" onclick="abrirFormularioSolicitud()">
-  + Solicitud de móvil
-</button>
+        <button id="btnSolicitudExterna" class="btn btn-success" onclick="abrirFormularioSolicitud()">+ Solicitud de móvil</button>
       </div>
 
       <div class="user-box">
@@ -578,7 +584,7 @@
   <div id="movilModalBackdrop" class="modal-backdrop hidden">
     <div class="modal">
       <h2 id="movilModalTitle" class="section-title">Nueva programación</h2>
-      <p class="section-subtitle">Complete los datos generales y luego registre por separado la salida y el retorno.</p>
+      <p class="section-subtitle">Complete los datos generales, el recorrido y luego registre salida y retorno.</p>
 
       <form id="movilForm" onsubmit="saveMovilProgramacion(event)">
         <input type="hidden" id="movilId" />
@@ -608,26 +614,26 @@
             </select>
           </div>
 
-          <div class="grid-1" style="margin-top:14px;">
-  <div>
-    <label>Paradas del recorrido</label>
-    <div id="movilParadasContainer"></div>
-    <button type="button" class="btn btn-secondary" onclick="agregarParadaMovil()">
-      + Agregar parada
-    </button>
-    <div style="margin-top:8px;color:#6b7280;font-size:12px;">
-      Puede registrar varios destinos con su hora correspondiente dentro del mismo viaje.
-    </div>
-  </div>
-</div>
-
           <div>
             <label>Cantidad pasajeros</label>
             <input type="number" id="movilPasajeros" min="0" required />
           </div>
 
           <div style="display:flex;align-items:flex-end;color:#6b7280;font-size:13px;">
-            Verifique que el destino, la fecha y el día correspondan a la misma programación.
+            Verifique que la fecha, el día y el recorrido correspondan a la misma programación.
+          </div>
+        </div>
+
+        <div class="grid-1" style="margin-top:14px;">
+          <div>
+            <label>Paradas del recorrido</label>
+            <div id="movilParadasContainer"></div>
+            <button type="button" class="btn btn-secondary" onclick="agregarParadaMovil()">
+              + Agregar parada
+            </button>
+            <div style="margin-top:8px;color:#6b7280;font-size:12px;">
+              Puede registrar varios destinos con su hora correspondiente dentro del mismo viaje.
+            </div>
           </div>
         </div>
 
@@ -642,32 +648,32 @@
             </div>
 
             <div>
-<label>Chofer salida</label>
-<select id="movilChoferSalida" required onchange="setPendienteIfNeeded('movilChoferSalida','movilSalida','movilPatenteSalida')">
-<option value="">Seleccione</option>
-<option value="Pendiente">Pendiente</option>
-<option>Hector Gomez Morales</option>
-<option>Luis Muñoz Cofre</option>
-<option>Isaias Luengo Riquelme</option>
-<option>Carlos Soto Saez</option>
-<option>Erwin Manriquez Alarcon</option>
-<option>Hector Mella Muñoz</option>
-<option>Hector Contreras Labarca</option>
+              <label>Chofer salida</label>
+              <select id="movilChoferSalida" required onchange="setPendienteIfNeeded('movilChoferSalida','movilSalida','movilPatenteSalida')">
+                <option value="">Seleccione</option>
+                <option value="Pendiente">Pendiente</option>
+                <option>Hector Gomez Morales</option>
+                <option>Luis Muñoz Cofre</option>
+                <option>Isaias Luengo Riquelme</option>
+                <option>Carlos Soto Saez</option>
+                <option>Erwin Manriquez Alarcon</option>
+                <option>Hector Mella Muñoz</option>
+                <option>Hector Contreras Labarca</option>
               </select>
             </div>
 
             <div>
               <label>Móvil salida</label>
               <select id="movilSalida" required onchange="updatePatenteByMovil('movilSalida','movilPatenteSalida')">
-<option value="">Seleccione</option>
-<option value="Pendiente">Pendiente</option>
-<option value="Camioneta 1">Camioneta 1</option>
-<option value="Furgon">Furgon</option>
-<option value="Camioneta 2">Camioneta 2</option>
-<option value="A334">A334</option>
-<option value="A359">A359</option>
-<option value="A315">A315</option>
-<option value="A299">A299</option>
+                <option value="">Seleccione</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Camioneta 1">Camioneta 1</option>
+                <option value="Furgon">Furgon</option>
+                <option value="Camioneta 2">Camioneta 2</option>
+                <option value="A334">A334</option>
+                <option value="A359">A359</option>
+                <option value="A315">A315</option>
+                <option value="A299">A299</option>
               </select>
             </div>
 
@@ -691,15 +697,15 @@
             <div>
               <label>Chofer retorno</label>
               <select id="movilChoferRetorno" required onchange="setPendienteIfNeeded('movilChoferRetorno','movilRetorno','movilPatenteRetorno')">
-<option value="">Seleccione</option>
-<option value="Pendiente">Pendiente</option>
-<option>Hector Gomez Morales</option>
-<option>Luis Muñoz Cofre</option>
-<option>Isaias Luengo Riquelme</option>
-<option>Carlos Soto Saez</option>
-<option>Erwin Manriquez Alarcon</option>
-<option>Hector Mella Muñoz</option>
-<option>Hector Contreras Labarca</option>
+                <option value="">Seleccione</option>
+                <option value="Pendiente">Pendiente</option>
+                <option>Hector Gomez Morales</option>
+                <option>Luis Muñoz Cofre</option>
+                <option>Isaias Luengo Riquelme</option>
+                <option>Carlos Soto Saez</option>
+                <option>Erwin Manriquez Alarcon</option>
+                <option>Hector Mella Muñoz</option>
+                <option>Hector Contreras Labarca</option>
               </select>
             </div>
 
@@ -707,15 +713,14 @@
               <label>Móvil retorno</label>
               <select id="movilRetorno" required onchange="updatePatenteByMovil('movilRetorno','movilPatenteRetorno')">
                 <option value="">Seleccione</option>
-<option value="">Seleccione</option>
-<option value="Pendiente">Pendiente</option>
-<option value="Camioneta 1">Camioneta 1</option>
-<option value="Furgon">Furgon</option>
-<option value="Camioneta 2">Camioneta 2</option>
-<option value="A334">A334</option>
-<option value="A359">A359</option>
-<option value="A315">A315</option>
-<option value="A299">A299</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Camioneta 1">Camioneta 1</option>
+                <option value="Furgon">Furgon</option>
+                <option value="Camioneta 2">Camioneta 2</option>
+                <option value="A334">A334</option>
+                <option value="A359">A359</option>
+                <option value="A315">A315</option>
+                <option value="A299">A299</option>
               </select>
             </div>
 
@@ -769,30 +774,30 @@
             <div>
               <label>Chofer salida</label>
               <select id="approveChoferSalida" required onchange="setPendienteIfNeeded('approveChoferSalida','approveMovilSalida','approvePatenteSalida')">
-<option value="">Seleccione</option>
-<option value="Pendiente">Pendiente</option>
-<option>Hector Gomez Morales</option>
-<option>Luis Muñoz Cofre</option>
-<option>Isaias Luengo Riquelme</option>
-<option>Carlos Soto Saez</option>
-<option>Erwin Manriquez Alarcon</option>
-<option>Hector Mella Muñoz</option>
-<option>Hector Contreras Labarca</option>
+                <option value="">Seleccione</option>
+                <option value="Pendiente">Pendiente</option>
+                <option>Hector Gomez Morales</option>
+                <option>Luis Muñoz Cofre</option>
+                <option>Isaias Luengo Riquelme</option>
+                <option>Carlos Soto Saez</option>
+                <option>Erwin Manriquez Alarcon</option>
+                <option>Hector Mella Muñoz</option>
+                <option>Hector Contreras Labarca</option>
               </select>
             </div>
 
             <div>
               <label>Móvil salida</label>
               <select id="approveMovilSalida" required onchange="updatePatenteByMovil('approveMovilSalida','approvePatenteSalida')">
-<option value="">Seleccione</option>
-<option value="Pendiente">Pendiente</option>
-<option value="Camioneta 1">Camioneta 1</option>
-<option value="Furgon">Furgon</option>
-<option value="Camioneta 2">Camioneta 2</option>
-<option value="A334">A334</option>
-<option value="A359">A359</option>
-<option value="A315">A315</option>
-<option value="A299">A299</option>
+                <option value="">Seleccione</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Camioneta 1">Camioneta 1</option>
+                <option value="Furgon">Furgon</option>
+                <option value="Camioneta 2">Camioneta 2</option>
+                <option value="A334">A334</option>
+                <option value="A359">A359</option>
+                <option value="A315">A315</option>
+                <option value="A299">A299</option>
               </select>
             </div>
 
@@ -810,31 +815,31 @@
           <div class="grid-2">
             <div>
               <label>Chofer retorno</label>
-             <select id="approveChoferRetorno" required onchange="setPendienteIfNeeded('approveChoferRetorno','approveMovilRetorno','approvePatenteRetorno')">
-<option value="">Seleccione</option>
-<option value="Pendiente">Pendiente</option>
-<option>Hector Gomez Morales</option>
-<option>Luis Muñoz Cofre</option>
-<option>Isaias Luengo Riquelme</option>
-<option>Carlos Soto Saez</option>
-<option>Erwin Manriquez Alarcon</option>
-<option>Hector Mella Muñoz</option>
-<option>Hector Contreras Labarca</option>
+              <select id="approveChoferRetorno" required onchange="setPendienteIfNeeded('approveChoferRetorno','approveMovilRetorno','approvePatenteRetorno')">
+                <option value="">Seleccione</option>
+                <option value="Pendiente">Pendiente</option>
+                <option>Hector Gomez Morales</option>
+                <option>Luis Muñoz Cofre</option>
+                <option>Isaias Luengo Riquelme</option>
+                <option>Carlos Soto Saez</option>
+                <option>Erwin Manriquez Alarcon</option>
+                <option>Hector Mella Muñoz</option>
+                <option>Hector Contreras Labarca</option>
               </select>
             </div>
 
             <div>
               <label>Móvil retorno</label>
               <select id="approveMovilRetorno" required onchange="updatePatenteByMovil('approveMovilRetorno','approvePatenteRetorno')">
-<option value="">Seleccione</option>
-<option value="Pendiente">Pendiente</option>
-<option value="Camioneta 1">Camioneta 1</option>
-<option value="Furgon">Furgon</option>
-<option value="Camioneta 2">Camioneta 2</option>
-<option value="A334">A334</option>
-<option value="A359">A359</option>
-<option value="A315">A315</option>
-<option value="A299">A299</option>
+                <option value="">Seleccione</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Camioneta 1">Camioneta 1</option>
+                <option value="Furgon">Furgon</option>
+                <option value="Camioneta 2">Camioneta 2</option>
+                <option value="A334">A334</option>
+                <option value="A359">A359</option>
+                <option value="A315">A315</option>
+                <option value="A299">A299</option>
               </select>
             </div>
 
@@ -881,16 +886,16 @@
   <script>
     const API = "https://script.google.com/macros/s/AKfycbzgwWOc0ZymXg6D_5yncrjhxkNRpEZVhGLYm0eC-fsOIMo01Tuoo_tQT7kHFUW6Qnwc/exec";
 
-const MOVILES_PATENTES = {
-  "Pendiente": "Pendiente",
-  "Camioneta 1": "STCF-94",
-  "Furgon": "PDGD-66",
-  "Camioneta 2": "STLR-10",
-  "A334": "JGFG-82",
-  "A359": "JJLJ-55",
-  "A315": "HXRP-49",
-  "A299": "HFPR-70"
-};
+    const MOVILES_PATENTES = {
+      "Pendiente": "Pendiente",
+      "Camioneta 1": "STCF-94",
+      "Furgon": "PDGD-66",
+      "Camioneta 2": "STLR-10",
+      "A334": "JGFG-82",
+      "A359": "JJLJ-55",
+      "A315": "HXRP-49",
+      "A299": "HFPR-70"
+    };
 
     let currentUser = null;
     let programaciones = [];
@@ -907,22 +912,29 @@ const MOVILES_PATENTES = {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
     }
-function abrirFormularioSolicitud() {
-  // URL de tu formulario
-  const baseUrl = "https://cesfamlabranza.github.io/solicitud-moviles-cesfam/";
 
-  // Si tienes el usuario cargado en sesión
-  if (window.currentUser) {
-    const userEncoded = encodeURIComponent(JSON.stringify(window.currentUser));
-    window.open(`${baseUrl}?user=${userEncoded}`, "_blank");
-  } else {
-    window.open(baseUrl, "_blank");
-  }
-}
     function updatePatenteByMovil(movilId, patenteId) {
       const movil = document.getElementById(movilId).value;
       const patente = MOVILES_PATENTES[movil] || "";
       document.getElementById(patenteId).value = patente;
+    }
+
+    function setPendienteIfNeeded(choferId, movilId, patenteId) {
+      const chofer = document.getElementById(choferId).value;
+      if (chofer === "Pendiente") {
+        document.getElementById(movilId).value = "Pendiente";
+        document.getElementById(patenteId).value = "Pendiente";
+      }
+    }
+
+    function abrirFormularioSolicitud() {
+      const baseUrl = "https://cesfamlabranza.github.io/solicitud-moviles-cesfam/";
+      if (window.currentUser) {
+        const userEncoded = encodeURIComponent(JSON.stringify(window.currentUser));
+        window.open(`${baseUrl}?user=${userEncoded}`, "_blank");
+      } else {
+        window.open(baseUrl, "_blank");
+      }
     }
 
     function getUserFromURL() {
@@ -1158,21 +1170,21 @@ function abrirFormularioSolicitud() {
 
       let hayDatos = false;
 
-patentes.forEach(row => {
-  const amItems = getItemsForDailyCell(row.patente, selectedDate, "AM");
-  const pmItems = getItemsForDailyCell(row.patente, selectedDate, "PM");
+      patentes.forEach(row => {
+        const amItems = getItemsForDailyCell(row.patente, selectedDate, "AM");
+        const pmItems = getItemsForDailyCell(row.patente, selectedDate, "PM");
 
-  if (!amItems.length && !pmItems.length) return;
+        if (!amItems.length && !pmItems.length) return;
 
-  hayDatos = true;
+        hayDatos = true;
 
-  html += `<tr>`;
-  html += `
-    <td class="driver-col sticky-left">
-      <div style="font-weight:bold;">${escapeHtml(row.patente)}</div>
-      <div style="font-size:12px;color:#6b7280;margin-top:4px;">${escapeHtml(row.movil)}</div>
-    </td>
-  `;
+        html += `<tr>`;
+        html += `
+          <td class="driver-col sticky-left">
+            <div style="font-weight:bold;">${escapeHtml(row.patente)}</div>
+            <div style="font-size:12px;color:#6b7280;margin-top:4px;">${escapeHtml(row.movil)}</div>
+          </td>
+        `;
 
         html += `<td class="slot-col"><div class="cell-wrap">`;
         if (amItems.length) {
@@ -1237,18 +1249,18 @@ patentes.forEach(row => {
       if (!patentes.length) {
         html += `<tr><td class="driver-col sticky-left">Sin datos</td><td colspan="14" style="padding:16px;color:#6b7280;">No hay programación registrada en esta semana.</td></tr>`;
       } else {
-patentes.forEach(row => {
-  html += `<tr>`;
-  html += `
-    <td class="driver-col sticky-left">
-      <div style="font-weight:bold;">${escapeHtml(row.patente)}</div>
-      <div style="font-size:12px;color:#6b7280;margin-top:4px;">${escapeHtml(row.movil)}</div>
-    </td>
-  `;
+        patentes.forEach(row => {
+          html += `<tr>`;
+          html += `
+            <td class="driver-col sticky-left">
+              <div style="font-weight:bold;">${escapeHtml(row.patente)}</div>
+              <div style="font-size:12px;color:#6b7280;margin-top:4px;">${escapeHtml(row.movil)}</div>
+            </td>
+          `;
 
-  DIAS.forEach(dia => {
-    BLOQUES.forEach(bloque => {
-      const items = getItemsForCell(row.patente, dia, bloque);
+          DIAS.forEach(dia => {
+            BLOQUES.forEach(bloque => {
+              const items = getItemsForCell(row.patente, dia, bloque);
               html += `<td class="slot-col"><div class="cell-wrap">`;
 
               if (!items.length) {
@@ -1338,35 +1350,35 @@ patentes.forEach(row => {
       return escapeHtml(estado || "-");
     }
 
-function getPatentesOrdenadas() {
-  const mapa = new Map();
+    function getPatentesOrdenadas() {
+      const mapa = new Map();
 
-  programaciones.forEach(item => {
-    const patenteSalida = String(item.patenteSalida || "").trim().toUpperCase();
-    const movilSalida = String(item.movilSalida || "").trim();
+      programaciones.forEach(item => {
+        const patenteSalida = String(item.patenteSalida || "").trim().toUpperCase();
+        const movilSalida = String(item.movilSalida || "").trim();
 
-    const patenteRetorno = String(item.patenteRetorno || "").trim().toUpperCase();
-    const movilRetorno = String(item.movilRetorno || "").trim();
+        const patenteRetorno = String(item.patenteRetorno || "").trim().toUpperCase();
+        const movilRetorno = String(item.movilRetorno || "").trim();
 
-    if (patenteSalida) {
-      mapa.set(patenteSalida, {
-        patente: patenteSalida,
-        movil: movilSalida || "-"
+        if (patenteSalida) {
+          mapa.set(patenteSalida, {
+            patente: patenteSalida,
+            movil: movilSalida || "-"
+          });
+        }
+
+        if (patenteRetorno && !mapa.has(patenteRetorno)) {
+          mapa.set(patenteRetorno, {
+            patente: patenteRetorno,
+            movil: movilRetorno || "-"
+          });
+        }
       });
-    }
 
-    if (patenteRetorno && !mapa.has(patenteRetorno)) {
-      mapa.set(patenteRetorno, {
-        patente: patenteRetorno,
-        movil: movilRetorno || "-"
-      });
+      return Array.from(mapa.values()).sort((a, b) =>
+        a.patente.localeCompare(b.patente, "es")
+      );
     }
-  });
-
-  return Array.from(mapa.values()).sort((a, b) =>
-    a.patente.localeCompare(b.patente, "es")
-  );
-}
 
     function getItemsForCell(patente, dia, bloque) {
       const items = [];
@@ -1458,6 +1470,10 @@ function getPatentesOrdenadas() {
       const clase = cellItem.tipo === "retorno" ? "trip-chip retorno" : "trip-chip salida";
       const tag = cellItem.tipo === "retorno" ? "Retorno" : "Salida";
       const mainLine = `${cellItem.hora || "--:--"}`;
+      const recorridoTexto =
+        cellItem.item && Array.isArray(cellItem.item.paradas) && cellItem.item.paradas.length
+          ? cellItem.item.paradas.map(p => p.destino).join(" → ")
+          : (cellItem.destino || "Sin destino");
 
       return `
         <button type="button" class="${clase}" onclick="showTripDetail('${cellItem.id}')">
@@ -1465,11 +1481,7 @@ function getPatentesOrdenadas() {
             <div class="chip-time">${escapeHtml(mainLine)}</div>
             <div class="chip-tag">${escapeHtml(tag)}</div>
           </div>
-          <div class="chip-main">${
-  cellItem.item && Array.isArray(cellItem.item.paradas) && cellItem.item.paradas.length
-    ? escapeHtml(cellItem.item.paradas.map(p => p.destino).join(" → "))
-    : escapeHtml(cellItem.destino || "Sin destino")
-}</div>
+          <div class="chip-main">${escapeHtml(recorridoTexto)}</div>
           <div class="chip-sub">${escapeHtml(cellItem.chofer || "Sin chofer")}</div>
         </button>
       `;
@@ -1487,17 +1499,16 @@ function getPatentesOrdenadas() {
             <div class="detail-line"><strong>Día:</strong> ${escapeHtml(item.dia || "-")}</div>
             <div class="detail-line"><strong>Fecha:</strong> ${escapeHtml(item.fecha || "-")}</div>
             <div class="detail-line"><strong>Semana:</strong> ${escapeHtml(item.semana || "-")}</div>
-            <div class="detail-line"><strong>Destino:</strong> ${escapeHtml(item.destino || "-")}</div>
             <div class="detail-line"><strong>Destino principal:</strong> ${escapeHtml(item.destino || "-")}</div>
-${
-  item.paradas && item.paradas.length
-    ? `<div class="detail-line"><strong>Recorrido:</strong><br>${
-        item.paradas
-          .map(p => `${escapeHtml(p.hora || "-")} - ${escapeHtml(p.destino || "-")}`)
-          .join("<br>")
-      }</div>`
-    : ""
-}
+            ${
+              item.paradas && item.paradas.length
+                ? `<div class="detail-line"><strong>Recorrido:</strong><br>${
+                    item.paradas
+                      .map(p => `${escapeHtml(p.hora || "-")} - ${escapeHtml(p.destino || "-")}`)
+                      .join("<br>")
+                  }</div>`
+                : ""
+            }
             <div class="detail-line"><strong>Pasajeros:</strong> ${escapeHtml(item.pasajeros || "-")}</div>
             <div class="detail-line"><strong>Observaciones:</strong> ${escapeHtml(item.observaciones || "-")}</div>
           </div>
@@ -1558,7 +1569,16 @@ ${
             <div class="detail-line"><strong>Día:</strong> ${escapeHtml(item.dia || "-")}</div>
             <div class="detail-line"><strong>Hora salida:</strong> ${escapeHtml(item.horaSalida || "-")}</div>
             <div class="detail-line"><strong>Hora retorno:</strong> ${escapeHtml(item.horaRetorno || "-")}</div>
-            <div class="detail-line"><strong>Destino:</strong> ${escapeHtml(item.destino || "-")}</div>
+            <div class="detail-line"><strong>Destino principal:</strong> ${escapeHtml(item.destino || "-")}</div>
+            ${
+              item.paradas && item.paradas.length
+                ? `<div class="detail-line"><strong>Recorrido:</strong><br>${
+                    item.paradas
+                      .map(p => `${escapeHtml(p.hora || "-")} - ${escapeHtml(p.destino || "-")}`)
+                      .join("<br>")
+                  }</div>`
+                : ""
+            }
             <div class="detail-line"><strong>Pasajeros:</strong> ${escapeHtml(item.pasajeros || "-")}</div>
           </div>
 
@@ -1615,45 +1635,99 @@ ${
       return dias[date.getDay()] || "";
     }
 
-function openMovilModal() {
-  document.getElementById("movilModalTitle").textContent = "Nueva programación";
-  document.getElementById("movilForm").reset();
-  document.getElementById("movilId").value = "";
-  document.getElementById("movilSemana").value = document.getElementById("weekFilter").value || getCurrentWeekValue();
-  document.getElementById("movilPatenteSalida").value = "";
-  document.getElementById("movilPatenteRetorno").value = "";
-  document.getElementById("movilFormError").classList.add("hidden");
-  resetParadasMovil();
-  document.getElementById("movilModalBackdrop").classList.remove("hidden");
-}
+    function agregarParadaMovil(destino = "", hora = "") {
+      const container = document.getElementById("movilParadasContainer");
+
+      const row = document.createElement("div");
+      row.className = "grid-2";
+      row.style.marginBottom = "10px";
+
+      row.innerHTML = `
+        <input type="time" class="movilParadaHora" value="${hora}" required />
+        <div style="display:flex; gap:6px;">
+          <input type="text" class="movilParadaDestino" value="${destino}" placeholder="Destino" required />
+          <button type="button" class="parada-remove" onclick="this.parentElement.parentElement.remove()">✕</button>
+        </div>
+      `;
+
+      container.appendChild(row);
+    }
+
+    function obtenerParadasMovil() {
+      const paradas = [];
+
+      document.querySelectorAll("#movilParadasContainer > div").forEach(row => {
+        const hora = row.querySelector(".movilParadaHora").value;
+        const destino = row.querySelector(".movilParadaDestino").value.trim();
+
+        if (hora && destino) {
+          paradas.push({ hora, destino });
+        }
+      });
+
+      paradas.sort((a, b) => a.hora.localeCompare(b.hora));
+      return paradas;
+    }
+
+    function resetParadasMovil() {
+      const container = document.getElementById("movilParadasContainer");
+      container.innerHTML = "";
+      agregarParadaMovil();
+    }
+
+    function cargarParadasMovil(paradas) {
+      const container = document.getElementById("movilParadasContainer");
+      container.innerHTML = "";
+
+      if (Array.isArray(paradas) && paradas.length) {
+        paradas
+          .slice()
+          .sort((a, b) => String(a.hora || "").localeCompare(String(b.hora || "")))
+          .forEach(p => agregarParadaMovil(p.destino || "", p.hora || ""));
+      } else {
+        agregarParadaMovil();
+      }
+    }
+
+    function openMovilModal() {
+      document.getElementById("movilModalTitle").textContent = "Nueva programación";
+      document.getElementById("movilForm").reset();
+      document.getElementById("movilId").value = "";
+      document.getElementById("movilSemana").value = document.getElementById("weekFilter").value || getCurrentWeekValue();
+      document.getElementById("movilPatenteSalida").value = "";
+      document.getElementById("movilPatenteRetorno").value = "";
+      document.getElementById("movilFormError").classList.add("hidden");
+      resetParadasMovil();
+      document.getElementById("movilModalBackdrop").classList.remove("hidden");
+    }
 
     function closeMovilModal() {
       document.getElementById("movilModalBackdrop").classList.add("hidden");
     }
 
-function editMovil(id) {
-  const item = programaciones.find(x => String(x.id) === String(id));
-  if (!item) return;
+    function editMovil(id) {
+      const item = programaciones.find(x => String(x.id) === String(id));
+      if (!item) return;
 
-  document.getElementById("movilModalTitle").textContent = "Modificar programación";
-  document.getElementById("movilId").value = item.id || "";
-  document.getElementById("movilSemana").value = item.semana || "";
-  document.getElementById("movilFecha").value = getItemDateISO(item);
-  document.getElementById("movilDia").value = item.dia || "";
-  document.getElementById("movilHoraSalida").value = item.horaSalida || "";
-  document.getElementById("movilHoraRetorno").value = item.horaRetorno || "";
-  document.getElementById("movilPasajeros").value = item.pasajeros || "";
-  document.getElementById("movilChoferSalida").value = item.choferSalida || "";
-  document.getElementById("movilChoferRetorno").value = item.choferRetorno || "";
-  document.getElementById("movilSalida").value = item.movilSalida || "";
-  document.getElementById("movilRetorno").value = item.movilRetorno || "";
-  updatePatenteByMovil("movilSalida", "movilPatenteSalida");
-  updatePatenteByMovil("movilRetorno", "movilPatenteRetorno");
-  document.getElementById("movilObservaciones").value = item.observaciones || "";
-  cargarParadasMovil(item.paradas || []);
-  document.getElementById("movilFormError").classList.add("hidden");
-  document.getElementById("movilModalBackdrop").classList.remove("hidden");
-}
+      document.getElementById("movilModalTitle").textContent = "Modificar programación";
+      document.getElementById("movilId").value = item.id || "";
+      document.getElementById("movilSemana").value = item.semana || "";
+      document.getElementById("movilFecha").value = getItemDateISO(item);
+      document.getElementById("movilDia").value = item.dia || "";
+      document.getElementById("movilHoraSalida").value = item.horaSalida || "";
+      document.getElementById("movilHoraRetorno").value = item.horaRetorno || "";
+      document.getElementById("movilPasajeros").value = item.pasajeros || "";
+      document.getElementById("movilChoferSalida").value = item.choferSalida || "";
+      document.getElementById("movilChoferRetorno").value = item.choferRetorno || "";
+      document.getElementById("movilSalida").value = item.movilSalida || "";
+      document.getElementById("movilRetorno").value = item.movilRetorno || "";
+      updatePatenteByMovil("movilSalida", "movilPatenteSalida");
+      updatePatenteByMovil("movilRetorno", "movilPatenteRetorno");
+      document.getElementById("movilObservaciones").value = item.observaciones || "";
+      cargarParadasMovil(item.paradas || []);
+      document.getElementById("movilFormError").classList.add("hidden");
+      document.getElementById("movilModalBackdrop").classList.remove("hidden");
+    }
 
     function openApproveModal(id) {
       const item = solicitudes.find(x => String(x.id) === String(id));
@@ -1705,105 +1779,44 @@ function editMovil(id) {
       }
     }
 
-function setPendienteIfNeeded(choferId, movilId, patenteId) {
-  const chofer = document.getElementById(choferId).value;
+    async function saveMovilProgramacion(event) {
+      event.preventDefault();
 
-  if (chofer === "Pendiente") {
-    document.getElementById(movilId).value = "Pendiente";
-    document.getElementById(patenteId).value = "Pendiente";
-  }
-}
+      const errorEl = document.getElementById("movilFormError");
+      errorEl.classList.add("hidden");
 
-function updatePatenteByMovil(movilId, patenteId) {
-  const movil = document.getElementById(movilId).value;
-  const patente = MOVILES_PATENTES[movil] || "";
-  document.getElementById(patenteId).value = patente;
-}
-    
-async function saveMovilProgramacion(event) {
-  event.preventDefault();
+      const horaSalida = document.getElementById("movilHoraSalida").value;
+      const horaRetorno = document.getElementById("movilHoraRetorno").value;
 
-  const errorEl = document.getElementById("movilFormError");
-  errorEl.classList.add("hidden");
+      if (horaSalida && horaRetorno && horaRetorno < horaSalida) {
+        errorEl.textContent = "La hora de retorno no debe ser menor que la hora de salida.";
+        errorEl.classList.remove("hidden");
+        return;
+      }
 
-  const horaSalida = document.getElementById("movilHoraSalida").value;
-  const horaRetorno = document.getElementById("movilHoraRetorno").value;
+      const paradas = obtenerParadasMovil();
 
-  if (horaSalida && horaRetorno && horaRetorno < horaSalida) {
-    errorEl.textContent = "La hora de retorno no debe ser menor que la hora de salida.";
-    errorEl.classList.remove("hidden");
-    return;
-  }
+      if (!paradas.length) {
+        errorEl.textContent = "Debe ingresar al menos una parada del recorrido.";
+        errorEl.classList.remove("hidden");
+        return;
+      }
 
-  const paradas = obtenerParadasMovil();
+      if (horaSalida && paradas[0].hora && paradas[0].hora < horaSalida) {
+        errorEl.textContent = "La primera parada no puede ser anterior a la hora de salida.";
+        errorEl.classList.remove("hidden");
+        return;
+      }
 
-  if (!paradas.length) {
-    errorEl.textContent = "Debe ingresar al menos una parada del recorrido.";
-    errorEl.classList.remove("hidden");
-    return;
-  }
+      const paradaFueraDeRango = paradas.some(p => {
+        return (horaSalida && p.hora < horaSalida) || (horaRetorno && p.hora > horaRetorno);
+      });
 
-  if (horaSalida && paradas[0].hora && paradas[0].hora < horaSalida) {
-    errorEl.textContent = "La primera parada no puede ser anterior a la hora de salida.";
-    errorEl.classList.remove("hidden");
-    return;
-  }
-
-  const paradaFueraDeRango = paradas.some(p => {
-    return (horaSalida && p.hora < horaSalida) || (horaRetorno && p.hora > horaRetorno);
-  });
-
-  if (paradaFueraDeRango) {
-    errorEl.textContent = "Las horas de las paradas deben estar entre la hora de salida y la hora de retorno.";
-    errorEl.classList.remove("hidden");
-    return;
-  }
-
-  const payload = {
-    id: document.getElementById("movilId").value.trim(),
-    semana: document.getElementById("movilSemana").value,
-    fecha: document.getElementById("movilFecha").value,
-    dia: document.getElementById("movilDia").value,
-    horaSalida: horaSalida,
-    horaRetorno: horaRetorno,
-    destino: paradas[0].destino,
-    paradas: paradas,
-    pasajeros: document.getElementById("movilPasajeros").value.trim(),
-    choferSalida: document.getElementById("movilChoferSalida").value.trim(),
-    choferRetorno: document.getElementById("movilChoferRetorno").value.trim(),
-    movilSalida: document.getElementById("movilSalida").value.trim(),
-    patenteSalida: document.getElementById("movilPatenteSalida").value.trim(),
-    movilRetorno: document.getElementById("movilRetorno").value.trim(),
-    patenteRetorno: document.getElementById("movilPatenteRetorno").value.trim(),
-    observaciones: document.getElementById("movilObservaciones").value.trim()
-  };
-
-  try {
-    const res = await fetch(API, {
-      method: "POST",
-      body: JSON.stringify({
-        action: "saveMovilProgramacion",
-        user: currentUser,
-        programacion: payload
-      })
-    });
-
-    const data = await res.json();
-
-    if (!data.success) {
-      errorEl.textContent = data.message || "No fue posible guardar.";
-      errorEl.classList.remove("hidden");
-      return;
-    }
-
-    closeMovilModal();
-    await loadMoviles();
-    alert(data.message);
-  } catch (error) {
-    errorEl.textContent = "No fue posible conectar con el sistema.";
-    errorEl.classList.remove("hidden");
-  }
-}
+      if (paradaFueraDeRango) {
+        errorEl.textContent = "Las horas de las paradas deben estar entre la hora de salida y la hora de retorno.";
+        errorEl.classList.remove("hidden");
+        return;
+      }
 
       const payload = {
         id: document.getElementById("movilId").value.trim(),
@@ -1812,7 +1825,8 @@ async function saveMovilProgramacion(event) {
         dia: document.getElementById("movilDia").value,
         horaSalida: horaSalida,
         horaRetorno: horaRetorno,
-        destino: document.getElementById("movilDestino").value.trim(),
+        destino: paradas[0].destino,
+        paradas: paradas,
         pasajeros: document.getElementById("movilPasajeros").value.trim(),
         choferSalida: document.getElementById("movilChoferSalida").value.trim(),
         choferRetorno: document.getElementById("movilChoferRetorno").value.trim(),
@@ -1958,60 +1972,6 @@ async function saveMovilProgramacion(event) {
       }
     }
 
-function agregarParadaMovil(destino = "", hora = "") {
-  const container = document.getElementById("movilParadasContainer");
-
-  const row = document.createElement("div");
-  row.className = "grid-2";
-  row.style.marginBottom = "10px";
-
-  row.innerHTML = `
-    <input type="time" class="movilParadaHora" value="${hora}" required />
-    <div style="display:flex; gap:6px;">
-      <input type="text" class="movilParadaDestino" value="${destino}" placeholder="Destino" required />
-      <button type="button" class="btn btn-danger" style="padding:0 12px;" onclick="this.parentElement.parentElement.remove()">✕</button>
-    </div>
-  `;
-
-  container.appendChild(row);
-}
-
-function obtenerParadasMovil() {
-  const paradas = [];
-
-  document.querySelectorAll("#movilParadasContainer > div").forEach(row => {
-    const hora = row.querySelector(".movilParadaHora").value;
-    const destino = row.querySelector(".movilParadaDestino").value.trim();
-
-    if (hora && destino) {
-      paradas.push({ hora, destino });
-    }
-  });
-
-  paradas.sort((a, b) => a.hora.localeCompare(b.hora));
-  return paradas;
-}
-
-function resetParadasMovil() {
-  const container = document.getElementById("movilParadasContainer");
-  container.innerHTML = "";
-  agregarParadaMovil();
-}
-
-function cargarParadasMovil(paradas) {
-  const container = document.getElementById("movilParadasContainer");
-  container.innerHTML = "";
-
-  if (Array.isArray(paradas) && paradas.length) {
-    paradas
-      .slice()
-      .sort((a, b) => String(a.hora || "").localeCompare(String(b.hora || "")))
-      .forEach(p => agregarParadaMovil(p.destino || "", p.hora || ""));
-  } else {
-    agregarParadaMovil();
-  }
-}
-    
     initApp();
   </script>
 </body>
