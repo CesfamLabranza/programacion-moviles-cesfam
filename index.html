@@ -870,7 +870,7 @@
   </div>
 
   <script>
-    const API = "AQUI_TU_URL_DE_APPS_SCRIPT";
+    const API = "https://script.google.com/macros/s/AKfycbzgwWOc0ZymXg6D_5yncrjhxkNRpEZVhGLYm0eC-fsOIMo01Tuoo_tQT7kHFUW6Qnwc/exec";
 
     const MOVILES_PATENTES = {
       "Pendiente": "Pendiente",
@@ -915,8 +915,8 @@
 
     function abrirFormularioSolicitud() {
       const baseUrl = "https://cesfamlabranza.github.io/solicitud-moviles-cesfam/";
-      if (window.currentUser) {
-        const userEncoded = encodeURIComponent(JSON.stringify(window.currentUser));
+      if (currentUser) {
+        const userEncoded = encodeURIComponent(JSON.stringify(currentUser));
         window.open(`${baseUrl}?user=${userEncoded}`, "_blank");
       } else {
         window.open(baseUrl, "_blank");
@@ -934,6 +934,7 @@
 
       try {
         currentUser = JSON.parse(decodeURIComponent(userParam));
+        window.currentUser = currentUser;
         return true;
       } catch (e) {
         alert("No fue posible leer la sesión del usuario.");
@@ -1078,8 +1079,7 @@
         const data = await res.json();
 
         if (!data.success) {
-          container.innerHTML = `<div class="panel" style="padding:18px;">No fue posible obtener la programación.</div>`;
-          loading.classList.add("hidden");
+          container.innerHTML = `<div class="panel" style="padding:18px;">${escapeHtml(data.message || "No fue posible obtener la programación.")}</div>`;
           return;
         }
 
