@@ -528,12 +528,12 @@
           <option value="solicitudes">Solicitudes</option>
         </select>
 
-        <select id="viewMode" onchange="updateViewControls(); renderCalendar()" style="width:160px;">
+        <select id="viewMode" onchange="updateViewControls(); loadMoviles()" style="width:160px;">
           <option value="semanal">Vista semanal</option>
           <option value="diaria">Vista diaria</option>
         </select>
 
-        <input type="date" id="dayFilter" style="width:180px;" onchange="renderCalendar()">
+        <input type="date" id="dayFilter" style="width:180px;" onchange="loadMoviles()">
 
         <select id="solicitudEstadoFilter" class="hidden" onchange="loadSolicitudes()" style="width:180px;">
           <option value="">Todas</option>
@@ -973,8 +973,9 @@
     }
 
     function goToCurrentWeek() {
+      const hoy = new Date().toISOString().split("T")[0];
       document.getElementById("weekFilter").value = getCurrentWeekValue();
-      document.getElementById("dayFilter").value = new Date().toISOString().split("T")[0];
+      document.getElementById("dayFilter").value = hoy;
       updateViewControls();
       loadMoviles();
     }
@@ -1055,12 +1056,20 @@
         }
 
         updateViewControls();
-        renderCalendar();
+        loadMoviles();
       }
     }
 
     async function loadMoviles() {
-      const semana = document.getElementById("weekFilter").value.trim();
+      const mode = document.getElementById("viewMode").value;
+      const selectedDate = document.getElementById("dayFilter").value;
+      let semana = document.getElementById("weekFilter").value.trim();
+
+      if (mode === "diaria" && selectedDate) {
+        semana = obtenerSemana(selectedDate);
+        document.getElementById("weekFilter").value = semana;
+      }
+
       const loading = document.getElementById("loadingMoviles");
       const container = document.getElementById("calendarContainer");
 
@@ -1072,7 +1081,7 @@
           method: "POST",
           body: JSON.stringify({
             action: "getMovilProgramacion",
-            semana
+            semana: semana
           })
         });
 
@@ -1156,7 +1165,6 @@
       const diaTexto = getDayNameFromISO(selectedDate);
 
       let html = `<table class="schedule-table">`;
-
       html += `<thead>`;
       html += `<tr>`;
       html += `<th class="sticky-left driver-col" rowspan="2">Patente / Móvil</th>`;
@@ -1167,7 +1175,6 @@
       html += `<th class="slot-col">TARDE (PM)</th>`;
       html += `</tr>`;
       html += `</thead>`;
-
       html += `<tbody>`;
 
       let hayDatos = false;
@@ -1609,9 +1616,7 @@
 
       const fecha = String(item.fecha || "").trim();
 
-      if (/^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
-        return fecha;
-      }
+      if (/^\d{4}-\d{2}-\d{2}$/.test(fecha)) return fecha;
 
       if (/^\d{2}-\d{2}-\d{4}$/.test(fecha)) {
         const parts = fecha.split("-");
@@ -1639,7 +1644,6 @@
 
     function agregarParadaMovil(destino = "", hora = "") {
       const container = document.getElementById("movilParadasContainer");
-
       const row = document.createElement("div");
       row.className = "grid-2";
       row.style.marginBottom = "10px";
@@ -1657,23 +1661,17 @@
 
     function obtenerParadasMovil() {
       const paradas = [];
-
       document.querySelectorAll("#movilParadasContainer > div").forEach(row => {
         const hora = row.querySelector(".movilParadaHora").value;
         const destino = row.querySelector(".movilParadaDestino").value.trim();
-
-        if (hora && destino) {
-          paradas.push({ hora, destino });
-        }
+        if (hora && destino) paradas.push({ hora, destino });
       });
-
       paradas.sort((a, b) => a.hora.localeCompare(b.hora));
       return paradas;
     }
 
     function resetParadasMovil() {
-      const container = document.getElementById("movilParadasContainer");
-      container.innerHTML = "";
+      document.getElementById("movilParadasContainer").innerHTML = "";
     }
 
     function cargarParadasMovil(paradas) {
