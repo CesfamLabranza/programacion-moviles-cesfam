@@ -132,6 +132,17 @@
       opacity:.8;
       padding-top:4px;
     }
+    .trip-chip.ok {
+  background: #ecfdf5;
+  border: 1px solid #86efac;
+  border-left: 5px solid #16a34a;
+}
+
+.trip-chip.conflicto {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-left: 5px solid #dc2626;
+}
     .trip-chip{
       width:100%;
       border:1px solid var(--chip-border);
@@ -1135,6 +1146,56 @@
       }
     }
 
+function analizarDisponibilidadSolicitud(solicitud) {
+  const horaInicio = solicitud.horaSalida;
+  const horaFin = solicitud.horaRetorno;
+  const fecha = solicitud.fecha;
+
+  let choferesOcupados = new Set();
+  let movilesOcupados = new Set();
+
+  programaciones.forEach(p => {
+    if (p.fecha !== fecha) return;
+
+    const inicioP = p.horaSalida;
+    const finP = p.horaRetorno;
+
+    const hayCruce =
+      (horaInicio >= inicioP && horaInicio < finP) ||
+      (horaFin > inicioP && horaFin <= finP) ||
+      (horaInicio <= inicioP && horaFin >= finP);
+
+    if (!hayCruce) return;
+
+    if (p.choferSalida) choferesOcupados.add(p.choferSalida);
+    if (p.choferRetorno) choferesOcupados.add(p.choferRetorno);
+
+    if (p.movilSalida) movilesOcupados.add(p.movilSalida);
+    if (p.movilRetorno) movilesOcupados.add(p.movilRetorno);
+  });
+
+  const todosChoferes = [
+    "Hector Gomez Morales",
+    "Luis Muñoz Cofre",
+    "Isaias Luengo Riquelme",
+    "Carlos Soto Saez",
+    "Erwin Manriquez Alarcon",
+    "Hector Mella Muñoz",
+    "Hector Contreras Labarca"
+  ];
+
+  const todosMoviles = Object.keys(MOVILES_PATENTES).filter(x => x !== "Pendiente");
+
+  const choferesDisponibles = todosChoferes.filter(c => !choferesOcupados.has(c));
+  const movilesDisponibles = todosMoviles.filter(m => !movilesOcupados.has(m));
+
+  return {
+    conflicto: choferesDisponibles.length === 0 || movilesDisponibles.length === 0,
+    choferesDisponibles,
+    movilesDisponibles
+  };
+}
+    
     function renderSolicitudesPendientesComoTabla(container) {
       const filas = getFilasSolicitudesPendientes();
 
@@ -1268,24 +1329,42 @@
       return items.sort((a, b) => String(a.horaSalida || "").localeCompare(String(b.horaSalida || "")));
     }
 
-    function renderSolicitudChip(item) {
-      return `
-        <div class="trip-chip salida" style="cursor:default;">
-          <div class="chip-top">
-            <div class="chip-time">${escapeHtml(item.horaSalida || "--:--")}</div>
-            <div class="chip-tag">Pendiente</div>
-          </div>
-          <div class="chip-main">${escapeHtml(item.destino || "Sin destino")}</div>
-          <div class="chip-sub">${escapeHtml(item.solicitanteNombre || "Sin solicitante")}</div>
-          <div class="chip-sub">Pasajeros: ${escapeHtml(item.pasajeros || "-")}</div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
-            <button class="btn btn-secondary" style="padding:8px 10px;font-size:12px;" onclick="showSolicitudDetail('${item.id}')">Ver</button>
-            <button class="btn btn-primary" style="padding:8px 10px;font-size:12px;" onclick="openApproveModal('${item.id}')">Aprobar</button>
-            <button class="btn btn-danger" style="padding:8px 10px;font-size:12px;" onclick="openRejectModal('${item.id}')">Rechazar</button>
-          </div>
-        </div>
-      `;
-    }
+function renderSolicitudChip(item) {
+  const analisis = analizarDisponibilidadSolicitud(item);
+
+  const colorClase = analisis.conflicto ? "conflicto" : "ok";
+
+  const sugerenciaChofer =
+    analisis.choferesDisponibles.length
+      ? analisis.choferesDisponibles.slice(0, 2).join(", ")
+      : "Sin disponibilidad";
+
+  const sugerenciaMovil =
+    analisis.movilesDisponibles.length
+      ? analisis.movilesDisponibles.slice(0, 2).join(", ")
+      : "Sin disponibilidad";
+
+  return `
+    <div class="trip-chip ${colorClase}" style="cursor:default;">
+      <div class="chip-top">
+        <div class="chip-time">${escapeHtml(item.horaSalida || "--:--")}</div>
+        <div class="chip-tag">${analisis.conflicto ? "Conflicto" : "Disponible"}</div>
+      </div>
+
+      <div class="chip-main">${escapeHtml(item.destino || "Sin destino")}</div>
+      <div class="chip-sub">${escapeHtml(item.solicitanteNombre || "Sin solicitante")}</div>
+
+      <div class="chip-sub"><strong>Chofer:</strong> ${escapeHtml(sugerenciaChofer)}</div>
+      <div class="chip-sub"><strong>Móvil:</strong> ${escapeHtml(sugerenciaMovil)}</div>
+
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+        <button class="btn btn-secondary" style="padding:8px 10px;font-size:12px;" onclick="showSolicitudDetail('${item.id}')">Ver</button>
+        <button class="btn btn-primary" style="padding:8px 10px;font-size:12px;" onclick="openApproveModal('${item.id}')">Aprobar</button>
+        <button class="btn btn-danger" style="padding:8px 10px;font-size:12px;" onclick="openRejectModal('${item.id}')">Rechazar</button>
+      </div>
+    </div>
+  `;
+}
 
     function renderEstadoSolicitud(estado) {
       const value = String(estado || "").toLowerCase();
