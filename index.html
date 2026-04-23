@@ -523,24 +523,24 @@
       </div>
 
       <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-        <select id="moduleView" onchange="toggleModuleView()" style="width:170px;">
-          <option value="programacion">Programación</option>
-          <option value="solicitudes">Solicitudes</option>
-        </select>
+<select id="moduleView" onchange="toggleModuleView()" style="width:170px;">
+  <option value="programacion">Programación</option>
+  <option value="solicitudes" selected>Solicitudes</option>
+</select>
 
-        <select id="viewMode" onchange="updateViewControls(); loadMoviles()" style="width:160px;">
-          <option value="semanal">Vista semanal</option>
-          <option value="diaria">Vista diaria</option>
-        </select>
+<select id="viewMode" onchange="updateViewControls(); loadMoviles()" style="width:160px;">
+  <option value="semanal">Vista semanal</option>
+  <option value="diaria">Vista diaria</option>
+</select>
 
-        <input type="date" id="dayFilter" style="width:180px;" onchange="loadMoviles()">
+<input type="date" id="dayFilter" style="width:180px;" onchange="loadMoviles()">
 
-        <select id="solicitudEstadoFilter" class="hidden" onchange="loadSolicitudes()" style="width:180px;">
-          <option value="">Todas</option>
-          <option value="Pendiente">Pendientes</option>
-          <option value="Aprobada">Aprobadas</option>
-          <option value="Rechazada">Rechazadas</option>
-        </select>
+<select id="solicitudEstadoFilter" class="hidden" onchange="loadSolicitudes()" style="width:180px;">
+  <option value="">Todas</option>
+  <option value="Pendiente" selected>Pendientes</option>
+  <option value="Aprobada">Aprobadas</option>
+  <option value="Rechazada">Rechazadas</option>
+</select>
       </div>
 
       <div class="toolbar">
