@@ -19,18 +19,14 @@
       --chip:#eef4ff;
       --chip-border:#c7d7ff;
     }
-
     *{box-sizing:border-box}
-
     body{
       margin:0;
       font-family:Arial,sans-serif;
       background:var(--bg);
       color:var(--text);
     }
-
     .hidden{display:none !important}
-
     .page{
       min-height:100vh;
       display:flex;
@@ -40,14 +36,11 @@
       width:100%;
       max-width:none;
     }
-
-    .panel,
-    .modal{
+    .panel,.modal{
       background:var(--panel);
       border:1px solid var(--line);
       border-radius:16px;
     }
-
     .topbar{
       display:flex;
       justify-content:space-between;
@@ -56,19 +49,16 @@
       flex-wrap:wrap;
       padding:20px;
     }
-
     .toolbar{
       display:flex;
       gap:12px;
       flex-wrap:wrap;
       align-items:center;
     }
-
     .user-box{
       text-align:right;
       font-size:14px;
     }
-
     .calendar-wrap{
       width:100%;
       overflow-x:auto;
@@ -76,7 +66,6 @@
       border-radius:18px;
       background:#fff;
     }
-
     .schedule-table{
       width:max-content;
       min-width:100%;
@@ -84,7 +73,6 @@
       border-spacing:0;
       table-layout:fixed;
     }
-
     .schedule-table th,
     .schedule-table td{
       border-right:1px solid var(--line);
@@ -92,7 +80,6 @@
       vertical-align:top;
       background:#fff;
     }
-
     .schedule-table thead th{
       background:var(--header);
       text-align:center;
@@ -100,17 +87,14 @@
       padding:10px 8px;
       color:var(--text);
     }
-
     .schedule-table thead tr:first-child th{
       font-size:16px;
       padding:12px 8px;
     }
-
     .schedule-table thead tr:nth-child(2) th{
       font-size:13px;
       color:#374151;
     }
-
     .schedule-table th.sticky-left,
     .schedule-table td.sticky-left{
       position:sticky;
@@ -118,12 +102,10 @@
       z-index:3;
       background:#fff;
     }
-
     .schedule-table thead .sticky-left{
       z-index:5;
       background:var(--header);
     }
-
     .driver-col{
       width:210px;
       min-width:210px;
@@ -132,28 +114,24 @@
       font-weight:bold;
       background:#f9fbff !important;
     }
-
     .slot-col{
       width:180px;
       min-width:180px;
       max-width:180px;
     }
-
     .cell-wrap{
-      min-height:132px;
+      min-height:190px;
       padding:8px;
       display:flex;
       flex-direction:column;
       gap:8px;
     }
-
     .empty-cell{
       color:var(--muted);
       font-size:12px;
       opacity:.8;
       padding-top:4px;
     }
-
     .trip-chip{
       width:100%;
       border:1px solid var(--chip-border);
@@ -165,23 +143,19 @@
       transition:.15s ease;
       color:var(--text);
     }
-
     .trip-chip:hover{
       transform:translateY(-1px);
       box-shadow:0 6px 14px rgba(37,99,235,.10);
       border-color:#9db8ff;
     }
-
     .trip-chip.salida{
       border-left:4px solid var(--primary);
     }
-
     .trip-chip.retorno{
       border-left:4px solid var(--success);
       background:#f0fdf4;
       border-color:#bde6c8;
     }
-
     .trip-chip .chip-top{
       display:flex;
       justify-content:space-between;
@@ -189,12 +163,10 @@
       align-items:center;
       margin-bottom:4px;
     }
-
     .trip-chip .chip-time{
       font-weight:bold;
       font-size:13px;
     }
-
     .trip-chip .chip-tag{
       font-size:11px;
       font-weight:bold;
@@ -204,25 +176,21 @@
       color:#1d4ed8;
       white-space:nowrap;
     }
-
     .trip-chip.retorno .chip-tag{
       background:#dcfce7;
       color:#047857;
     }
-
     .trip-chip .chip-main{
       font-size:12px;
       line-height:1.35;
       margin-bottom:2px;
       font-weight:bold;
     }
-
     .trip-chip .chip-sub{
       font-size:12px;
       line-height:1.35;
       color:#374151;
     }
-
     .btn{
       border:none;
       border-radius:10px;
@@ -231,32 +199,11 @@
       cursor:pointer;
       font-size:14px;
     }
-
-    .btn-primary{
-      background:var(--primary);
-      color:#fff;
-    }
-
-    .btn-secondary{
-      background:#eef2f7;
-      color:var(--text);
-    }
-
-    .btn-danger{
-      background:var(--danger);
-      color:#fff;
-    }
-
-    .btn-warning{
-      background:#f59e0b;
-      color:#fff;
-    }
-
-    .btn-success{
-      background:#16a34a;
-      color:#fff;
-    }
-
+    .btn-primary{background:var(--primary);color:#fff}
+    .btn-secondary{background:#eef2f7;color:var(--text)}
+    .btn-danger{background:var(--danger);color:#fff}
+    .btn-warning{background:#f59e0b;color:#fff}
+    .btn-success{background:#16a34a;color:#fff}
     input, select, textarea{
       width:100%;
       padding:12px;
@@ -265,31 +212,26 @@
       font-size:14px;
       background:#fff;
     }
-
     textarea{
       min-height:110px;
       resize:vertical;
     }
-
     label{
       display:block;
       margin-bottom:6px;
       font-size:14px;
       font-weight:bold;
     }
-
     .grid-2{
       display:grid;
       grid-template-columns:repeat(2, 1fr);
       gap:14px;
     }
-
     .grid-1{
       display:grid;
       grid-template-columns:1fr;
       gap:14px;
     }
-
     .modal-backdrop{
       position:fixed;
       inset:0;
@@ -300,7 +242,6 @@
       padding:18px;
       z-index:9999;
     }
-
     .modal{
       width:100%;
       max-width:980px;
@@ -308,7 +249,6 @@
       overflow:auto;
       padding:24px;
     }
-
     .modal-actions{
       display:flex;
       justify-content:flex-end;
@@ -316,13 +256,11 @@
       margin-top:18px;
       flex-wrap:wrap;
     }
-
     .error-text{
       color:var(--danger);
       font-size:13px;
       margin-top:8px;
     }
-
     .spinner{
       width:28px;
       height:28px;
@@ -332,24 +270,20 @@
       animation:spin 1s linear infinite;
       margin:auto;
     }
-
     .loading-box{
       text-align:center;
       padding:20px;
       color:var(--muted);
     }
-
     .section-title{
       margin:6px 0 12px 0;
       font-size:22px;
     }
-
     .section-subtitle{
       margin:0 0 14px 0;
       color:var(--muted);
       font-size:14px;
     }
-
     .block-card{
       background:#fff;
       border:1px solid #e5e7eb;
@@ -357,21 +291,13 @@
       padding:18px;
       margin-top:12px;
     }
-
-    .block-card.salida{
-      border-left:6px solid var(--primary);
-    }
-
-    .block-card.retorno{
-      border-left:6px solid var(--success);
-    }
-
+    .block-card.salida{border-left:6px solid var(--primary)}
+    .block-card.retorno{border-left:6px solid var(--success)}
     .block-heading{
       margin:0 0 14px 0;
       font-size:18px;
       font-weight:bold;
     }
-
     .trip-badge{
       display:inline-block;
       padding:5px 10px;
@@ -382,36 +308,30 @@
       color:#1d4ed8;
       margin-bottom:8px;
     }
-
     .trip-badge.return{
       background:#ecfdf5;
       color:#047857;
     }
-
     .detail-grid{
       display:grid;
       grid-template-columns:repeat(2, 1fr);
       gap:14px;
     }
-
     .detail-box{
       border:1px solid #e5e7eb;
       border-radius:12px;
       padding:14px;
       background:#fafcff;
     }
-
     .detail-box h4{
       margin:0 0 10px 0;
       font-size:16px;
     }
-
     .detail-line{
       font-size:14px;
       line-height:1.5;
       margin-bottom:6px;
     }
-
     .status-pill{
       display:inline-block;
       padding:5px 10px;
@@ -420,22 +340,9 @@
       font-weight:bold;
       white-space:nowrap;
     }
-
-    .status-pill.pendiente{
-      background:#fef3c7;
-      color:#92400e;
-    }
-
-    .status-pill.aprobada{
-      background:#dcfce7;
-      color:#166534;
-    }
-
-    .status-pill.rechazada{
-      background:#fee2e2;
-      color:#991b1b;
-    }
-
+    .status-pill.pendiente{background:#fef3c7;color:#92400e}
+    .status-pill.aprobada{background:#dcfce7;color:#166534}
+    .status-pill.rechazada{background:#fee2e2;color:#991b1b}
     .solicitudes-table-wrap{
       width:100%;
       overflow-x:auto;
@@ -443,14 +350,12 @@
       border-radius:18px;
       background:#fff;
     }
-
     .solicitudes-table{
       width:100%;
       min-width:1300px;
       border-collapse:separate;
       border-spacing:0;
     }
-
     .solicitudes-table th,
     .solicitudes-table td{
       border-right:1px solid var(--line);
@@ -460,13 +365,11 @@
       background:#fff;
       font-size:14px;
     }
-
     .solicitudes-table th{
       background:var(--header);
       font-weight:bold;
       text-align:center;
     }
-
     .parada-remove{
       border:none;
       background:#fee2e2;
@@ -476,36 +379,20 @@
       font-weight:bold;
       cursor:pointer;
     }
-
-    .parada-remove:hover{
-      background:#fecaca;
-    }
-
+    .parada-remove:hover{background:#fecaca}
     @keyframes spin{
       0%{transform:rotate(0deg)}
       100%{transform:rotate(360deg)}
     }
-
     @media (max-width:900px){
-      .grid-2,
-      .detail-grid{
-        grid-template-columns:1fr;
-      }
-
-      .topbar{
-        align-items:flex-start;
-      }
-
-      .user-box{
-        text-align:left;
-      }
-
+      .grid-2,.detail-grid{grid-template-columns:1fr}
+      .topbar{align-items:flex-start}
+      .user-box{text-align:left}
       .driver-col{
         width:160px;
         min-width:160px;
         max-width:160px;
       }
-
       .slot-col{
         width:150px;
         min-width:150px;
@@ -523,24 +410,24 @@
       </div>
 
       <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-<select id="moduleView" onchange="toggleModuleView()" style="width:170px;">
-  <option value="programacion">Programación</option>
-  <option value="solicitudes" selected>Solicitudes</option>
-</select>
+        <select id="moduleView" onchange="toggleModuleView()" style="width:170px;">
+          <option value="programacion">Programación</option>
+          <option value="solicitudes" selected>Solicitudes</option>
+        </select>
 
-<select id="viewMode" onchange="updateViewControls(); loadMoviles()" style="width:160px;">
-  <option value="semanal">Vista semanal</option>
-  <option value="diaria">Vista diaria</option>
-</select>
+        <select id="viewMode" onchange="updateViewControls(); loadMoviles()" style="width:160px;">
+          <option value="semanal">Vista semanal</option>
+          <option value="diaria">Vista diaria</option>
+        </select>
 
-<input type="date" id="dayFilter" style="width:180px;" onchange="loadMoviles()">
+        <input type="date" id="dayFilter" style="width:180px;" onchange="loadMoviles()">
 
-<select id="solicitudEstadoFilter" class="hidden" onchange="loadSolicitudes()" style="width:180px;">
-  <option value="">Todas</option>
-  <option value="Pendiente" selected>Pendientes</option>
-  <option value="Aprobada">Aprobadas</option>
-  <option value="Rechazada">Rechazadas</option>
-</select>
+        <select id="solicitudEstadoFilter" class="hidden" onchange="loadSolicitudes()" style="width:180px;">
+          <option value="">Todas</option>
+          <option value="Pendiente" selected>Pendientes</option>
+          <option value="Aprobada">Aprobadas</option>
+          <option value="Rechazada">Rechazadas</option>
+        </select>
       </div>
 
       <div class="toolbar">
@@ -1152,11 +1039,7 @@
 
     function renderDailyTable(selectedDate, container) {
       if (!selectedDate) {
-        container.innerHTML = `
-          <div class="panel" style="padding:18px;color:#6b7280;">
-            Seleccione una fecha.
-          </div>
-        `;
+        container.innerHTML = `<div class="panel" style="padding:18px;color:#6b7280;">Seleccione una fecha.</div>`;
         return;
       }
 
@@ -1165,68 +1048,33 @@
       const diaTexto = getDayNameFromISO(selectedDate);
 
       let html = `<table class="schedule-table">`;
-      html += `<thead>`;
-      html += `<tr>`;
-      html += `<th class="sticky-left driver-col" rowspan="2">Patente / Móvil</th>`;
-      html += `<th colspan="2">${escapeHtml(diaTexto)} · ${escapeHtml(fechaTexto)}</th>`;
-      html += `</tr>`;
-      html += `<tr>`;
-      html += `<th class="slot-col">MAÑANA (AM)</th>`;
-      html += `<th class="slot-col">TARDE (PM)</th>`;
-      html += `</tr>`;
-      html += `</thead>`;
-      html += `<tbody>`;
+      html += `<thead><tr><th class="sticky-left driver-col" rowspan="2">Patente / Móvil</th><th colspan="2">${escapeHtml(diaTexto)} · ${escapeHtml(fechaTexto)}</th></tr>`;
+      html += `<tr><th class="slot-col">MAÑANA (AM)</th><th class="slot-col">TARDE (PM)</th></tr></thead><tbody>`;
 
       let hayDatos = false;
 
       patentes.forEach(row => {
         const amItems = getItemsForDailyCell(row.patente, selectedDate, "AM");
         const pmItems = getItemsForDailyCell(row.patente, selectedDate, "PM");
-
         if (!amItems.length && !pmItems.length) return;
 
         hayDatos = true;
-
         html += `<tr>`;
-        html += `
-          <td class="driver-col sticky-left">
-            <div style="font-weight:bold;">${escapeHtml(row.patente)}</div>
-            <div style="font-size:12px;color:#6b7280;margin-top:4px;">${escapeHtml(row.movil)}</div>
-          </td>
-        `;
+        html += `<td class="driver-col sticky-left"><div style="font-weight:bold;">${escapeHtml(row.patente)}</div><div style="font-size:12px;color:#6b7280;margin-top:4px;">${escapeHtml(row.movil)}</div></td>`;
 
         html += `<td class="slot-col"><div class="cell-wrap">`;
-        if (amItems.length) {
-          amItems.forEach(cellItem => {
-            html += renderTripChip(cellItem);
-          });
-        } else {
-          html += `<div class="empty-cell"></div>`;
-        }
+        amItems.length ? amItems.forEach(cellItem => html += renderTripChip(cellItem)) : html += `<div class="empty-cell"></div>`;
         html += `</div></td>`;
 
         html += `<td class="slot-col"><div class="cell-wrap">`;
-        if (pmItems.length) {
-          pmItems.forEach(cellItem => {
-            html += renderTripChip(cellItem);
-          });
-        } else {
-          html += `<div class="empty-cell"></div>`;
-        }
+        pmItems.length ? pmItems.forEach(cellItem => html += renderTripChip(cellItem)) : html += `<div class="empty-cell"></div>`;
         html += `</div></td>`;
 
         html += `</tr>`;
       });
 
       if (!hayDatos) {
-        html += `
-          <tr>
-            <td class="driver-col sticky-left">Sin datos</td>
-            <td colspan="2" style="padding:16px;color:#6b7280;">
-              No hay programación para la fecha seleccionada.
-            </td>
-          </tr>
-        `;
+        html += `<tr><td class="driver-col sticky-left">Sin datos</td><td colspan="2" style="padding:16px;color:#6b7280;">No hay programación para la fecha seleccionada.</td></tr>`;
       }
 
       html += `</tbody></table>`;
@@ -1236,54 +1084,33 @@
     function renderWeeklyTable(container) {
       const patentes = getPatentesOrdenadas();
       let html = `<table class="schedule-table">`;
-
-      html += `<thead>`;
-      html += `<tr>`;
-      html += `<th class="sticky-left driver-col" rowspan="2">Patente / Móvil</th>`;
-      DIAS.forEach(dia => {
-        html += `<th colspan="2">${dia}</th>`;
-      });
-      html += `</tr>`;
-
-      html += `<tr>`;
+      html += `<thead><tr><th class="sticky-left driver-col" rowspan="2">Patente / Móvil</th>`;
+      DIAS.forEach(dia => html += `<th colspan="2">${dia}</th>`);
+      html += `</tr><tr>`;
       DIAS.forEach(() => {
         html += `<th class="slot-col">MAÑANA (AM)</th>`;
         html += `<th class="slot-col">TARDE (PM)</th>`;
       });
-      html += `</tr>`;
-      html += `</thead>`;
-
-      html += `<tbody>`;
+      html += `</tr></thead><tbody>`;
 
       if (!patentes.length) {
         html += `<tr><td class="driver-col sticky-left">Sin datos</td><td colspan="14" style="padding:16px;color:#6b7280;">No hay programación registrada en esta semana.</td></tr>`;
       } else {
         patentes.forEach(row => {
           html += `<tr>`;
-          html += `
-            <td class="driver-col sticky-left">
-              <div style="font-weight:bold;">${escapeHtml(row.patente)}</div>
-              <div style="font-size:12px;color:#6b7280;margin-top:4px;">${escapeHtml(row.movil)}</div>
-            </td>
-          `;
-
+          html += `<td class="driver-col sticky-left"><div style="font-weight:bold;">${escapeHtml(row.patente)}</div><div style="font-size:12px;color:#6b7280;margin-top:4px;">${escapeHtml(row.movil)}</div></td>`;
           DIAS.forEach(dia => {
             BLOQUES.forEach(bloque => {
               const items = getItemsForCell(row.patente, dia, bloque);
               html += `<td class="slot-col"><div class="cell-wrap">`;
-
               if (!items.length) {
                 html += `<div class="empty-cell"></div>`;
               } else {
-                items.forEach(cellItem => {
-                  html += renderTripChip(cellItem);
-                });
+                items.forEach(cellItem => html += renderTripChip(cellItem));
               }
-
               html += `</div></td>`;
             });
           });
-
           html += `</tr>`;
         });
       }
@@ -1294,12 +1121,60 @@
 
     function renderSolicitudes() {
       const container = document.getElementById("solicitudesContainer");
+      const estado = document.getElementById("solicitudEstadoFilter").value || "";
 
       if (!solicitudes.length) {
         container.innerHTML = `<div style="padding:18px;color:#6b7280;">No hay solicitudes para mostrar.</div>`;
         return;
       }
 
+      if (estado === "Pendiente") {
+        renderSolicitudesPendientesComoTabla(container);
+      } else {
+        renderSolicitudesListado(container);
+      }
+    }
+
+    function renderSolicitudesPendientesComoTabla(container) {
+      const filas = getFilasSolicitudesPendientes();
+
+      let html = `<table class="schedule-table">`;
+      html += `<thead><tr><th class="sticky-left driver-col" rowspan="2">Unidad / Solicitante</th>`;
+      DIAS.forEach(dia => html += `<th colspan="2">${dia}</th>`);
+      html += `</tr><tr>`;
+      DIAS.forEach(() => {
+        html += `<th class="slot-col">MAÑANA (AM)</th>`;
+        html += `<th class="slot-col">TARDE (PM)</th>`;
+      });
+      html += `</tr></thead><tbody>`;
+
+      if (!filas.length) {
+        html += `<tr><td class="driver-col sticky-left">Sin datos</td><td colspan="14" style="padding:16px;color:#6b7280;">No hay solicitudes pendientes para mostrar.</td></tr>`;
+      } else {
+        filas.forEach(fila => {
+          html += `<tr>`;
+          html += `<td class="driver-col sticky-left"><div style="font-weight:bold;">${escapeHtml(fila.unidad)}</div><div style="font-size:12px;color:#6b7280;margin-top:4px;">${escapeHtml(fila.solicitante)}</div></td>`;
+          DIAS.forEach(dia => {
+            BLOQUES.forEach(bloque => {
+              const items = getSolicitudesForCell(fila.key, dia, bloque);
+              html += `<td class="slot-col"><div class="cell-wrap">`;
+              if (!items.length) {
+                html += `<div class="empty-cell"></div>`;
+              } else {
+                items.forEach(item => html += renderSolicitudChip(item));
+              }
+              html += `</div></td>`;
+            });
+          });
+          html += `</tr>`;
+        });
+      }
+
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    }
+
+    function renderSolicitudesListado(container) {
       let html = `
         <table class="solicitudes-table">
           <thead>
@@ -1349,6 +1224,67 @@
 
       html += `</tbody></table>`;
       container.innerHTML = html;
+    }
+
+    function getFilasSolicitudesPendientes() {
+      const mapa = new Map();
+
+      solicitudes
+        .filter(x => String(x.estado || "").toLowerCase() === "pendiente")
+        .forEach(item => {
+          const unidad = String(item.unidadSolicitante || "Sin unidad").trim();
+          const solicitante = String(item.solicitanteNombre || "Sin nombre").trim();
+          const key = `${unidad}__${solicitante}`;
+
+          if (!mapa.has(key)) {
+            mapa.set(key, { key, unidad, solicitante });
+          }
+        });
+
+      return Array.from(mapa.values()).sort((a, b) => {
+        const unidadCompare = a.unidad.localeCompare(b.unidad, "es");
+        if (unidadCompare !== 0) return unidadCompare;
+        return a.solicitante.localeCompare(b.solicitante, "es");
+      });
+    }
+
+    function getSolicitudesForCell(rowKey, dia, bloque) {
+      const items = [];
+
+      solicitudes.forEach(item => {
+        if (String(item.estado || "").toLowerCase() !== "pendiente") return;
+
+        const unidad = String(item.unidadSolicitante || "Sin unidad").trim();
+        const solicitante = String(item.solicitanteNombre || "Sin nombre").trim();
+        const key = `${unidad}__${solicitante}`;
+
+        if (key !== rowKey) return;
+        if (String(item.dia || "") !== dia) return;
+        if (getBlockByTime(item.horaSalida) !== bloque) return;
+
+        items.push(item);
+      });
+
+      return items.sort((a, b) => String(a.horaSalida || "").localeCompare(String(b.horaSalida || "")));
+    }
+
+    function renderSolicitudChip(item) {
+      return `
+        <div class="trip-chip salida" style="cursor:default;">
+          <div class="chip-top">
+            <div class="chip-time">${escapeHtml(item.horaSalida || "--:--")}</div>
+            <div class="chip-tag">Pendiente</div>
+          </div>
+          <div class="chip-main">${escapeHtml(item.destino || "Sin destino")}</div>
+          <div class="chip-sub">${escapeHtml(item.solicitanteNombre || "Sin solicitante")}</div>
+          <div class="chip-sub">Pasajeros: ${escapeHtml(item.pasajeros || "-")}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+            <button class="btn btn-secondary" style="padding:8px 10px;font-size:12px;" onclick="showSolicitudDetail('${item.id}')">Ver</button>
+            <button class="btn btn-primary" style="padding:8px 10px;font-size:12px;" onclick="openApproveModal('${item.id}')">Aprobar</button>
+            <button class="btn btn-danger" style="padding:8px 10px;font-size:12px;" onclick="openRejectModal('${item.id}')">Rechazar</button>
+          </div>
+        </div>
+      `;
     }
 
     function renderEstadoSolicitud(estado) {
@@ -1512,9 +1448,7 @@
             ${
               item.paradas && item.paradas.length
                 ? `<div class="detail-line"><strong>Paradas intermedias:</strong><br>${
-                    item.paradas
-                      .map(p => `${escapeHtml(p.hora || "-")} - ${escapeHtml(p.destino || "-")}`)
-                      .join("<br>")
+                    item.paradas.map(p => `${escapeHtml(p.hora || "-")} - ${escapeHtml(p.destino || "-")}`).join("<br>")
                   }</div>`
                 : ""
             }
@@ -1582,9 +1516,7 @@
             ${
               item.paradas && item.paradas.length
                 ? `<div class="detail-line"><strong>Paradas intermedias:</strong><br>${
-                    item.paradas
-                      .map(p => `${escapeHtml(p.hora || "-")} - ${escapeHtml(p.destino || "-")}`)
-                      .join("<br>")
+                    item.paradas.map(p => `${escapeHtml(p.hora || "-")} - ${escapeHtml(p.destino || "-")}`).join("<br>")
                   }</div>`
                 : ""
             }
@@ -1613,7 +1545,6 @@
 
     function getItemDateISO(item) {
       if (item.fechaISO) return item.fechaISO;
-
       const fecha = String(item.fecha || "").trim();
 
       if (/^\d{4}-\d{2}-\d{2}$/.test(fecha)) return fecha;
@@ -1635,7 +1566,6 @@
 
     function getDayNameFromISO(isoDate) {
       if (!isoDate) return "";
-
       const [year, month, day] = isoDate.split("-").map(Number);
       const date = new Date(year, month - 1, day);
       const dias = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
