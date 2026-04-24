@@ -410,6 +410,84 @@
         max-width:150px;
       }
     }
+    @media print {
+  @page {
+    size: landscape;
+    margin: 8mm;
+  }
+
+  body {
+    background: #fff !important;
+  }
+
+  .topbar,
+  .toolbar,
+  #loadingMoviles,
+  #loadingSolicitudes,
+  .modal-backdrop,
+  button,
+  select,
+  input {
+    display: none !important;
+  }
+
+  #app {
+    padding: 0 !important;
+  }
+
+  .calendar-wrap,
+  .solicitudes-table-wrap {
+    border: none !important;
+    overflow: visible !important;
+  }
+
+  .schedule-table,
+  .solicitudes-table {
+    width: 100% !important;
+    min-width: 100% !important;
+    font-size: 9px !important;
+    transform: scale(0.82);
+    transform-origin: top left;
+  }
+
+  .schedule-table th,
+  .schedule-table td,
+  .solicitudes-table th,
+  .solicitudes-table td {
+    padding: 4px !important;
+  }
+
+  .cell-wrap {
+    min-height: auto !important;
+    padding: 3px !important;
+    gap: 3px !important;
+  }
+
+  .trip-chip {
+    padding: 4px !important;
+    font-size: 8px !important;
+    box-shadow: none !important;
+  }
+
+  .chip-time,
+  .chip-main,
+  .chip-sub,
+  .chip-tag {
+    font-size: 8px !important;
+  }
+
+  .driver-col {
+    width: 110px !important;
+    min-width: 110px !important;
+    max-width: 110px !important;
+  }
+
+  .slot-col {
+    width: 90px !important;
+    min-width: 90px !important;
+    max-width: 90px !important;
+  }
+}
   </style>
 </head>
 <body>
@@ -447,6 +525,7 @@
         <button id="btnRefreshProgramacion" class="btn btn-secondary" onclick="loadMoviles()">Actualizar</button>
         <button id="btnRefreshSolicitudes" class="btn btn-secondary hidden" onclick="loadSolicitudes()">Actualizar solicitudes</button>
         <button id="newButton" class="btn btn-primary hidden" onclick="openMovilModal()">+ Nueva programación</button>
+        <button id="btnPdf" class="btn btn-secondary" onclick="generarPDFVista()">Generar PDF</button>
         <button id="btnSolicitudExterna" class="btn btn-success" onclick="abrirFormularioSolicitud()">+ Solicitud de móvil</button>
       </div>
 
@@ -811,6 +890,19 @@
       }
     }
 
+  function generarPDFVista() {
+  const module = document.getElementById("moduleView").value;
+  const estado = document.getElementById("solicitudEstadoFilter").value || "";
+  const viewMode = document.getElementById("viewMode").value;
+
+  if (module === "solicitudes" && estado !== "Pendiente") {
+    alert("El PDF está pensado para solicitudes pendientes por semana.");
+    return;
+  }
+
+  window.print();
+}
+    
     function abrirFormularioSolicitud() {
       const baseUrl = "https://cesfamlabranza.github.io/solicitud-moviles-cesfam/";
       if (currentUser) {
