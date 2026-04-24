@@ -442,7 +442,7 @@
       </div>
 
       <div class="toolbar">
-        <input type="week" id="weekFilter" style="min-width:180px;" onchange="loadMoviles()" />
+        <input type="week" id="weekFilter" style="min-width:180px;" onchange="onWeekChange()" />
         <button id="btnCurrentWeek" class="btn btn-secondary" onclick="goToCurrentWeek()">Semana actual</button>
         <button id="btnRefreshProgramacion" class="btn btn-secondary" onclick="loadMoviles()">Actualizar</button>
         <button id="btnRefreshSolicitudes" class="btn btn-secondary hidden" onclick="loadSolicitudes()">Actualizar solicitudes</button>
@@ -919,7 +919,7 @@
         programacionSection.classList.add("hidden");
         solicitudesSection.classList.remove("hidden");
 
-        weekFilter.classList.add("hidden");
+        weekFilter.classList.remove("hidden");
         dayFilter.classList.add("hidden");
         viewMode.classList.add("hidden");
         btnCurrentWeek.classList.add("hidden");
@@ -999,41 +999,49 @@
       }
     }
 
-    async function loadSolicitudes() {
-      if (!isAdmin()) return;
+async function loadSolicitudes() {
+  if (!isAdmin()) return;
 
-      const estado = document.getElementById("solicitudEstadoFilter").value || "";
-      const loading = document.getElementById("loadingSolicitudes");
-      const container = document.getElementById("solicitudesContainer");
+  const estado = document.getElementById("solicitudEstadoFilter").value || "";
+  const semana = document.getElementById("weekFilter").value || "";
 
-      loading.classList.remove("hidden");
-      container.innerHTML = "";
+  const loading = document.getElementById("loadingSolicitudes");
+  const container = document.getElementById("solicitudesContainer");
 
-      try {
-        const res = await fetch(API, {
-          method: "POST",
-          body: JSON.stringify({
-            action: "getSolicitudesMoviles",
-            user: currentUser,
-            estado: estado
-          })
-        });
+  loading.classList.remove("hidden");
+  container.innerHTML = "";
 
-        const data = await res.json();
+  try {
+    const res = await fetch(API, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "getSolicitudesMoviles",
+        user: currentUser,
+        estado: estado,
+        semana: semana
+      })
+    });
 
-        if (!data.success) {
-          container.innerHTML = `<div style="padding:18px;color:#dc2626;">${escapeHtml(data.message || "No fue posible obtener las solicitudes.")}</div>`;
-          return;
-        }
+    const data = await res.json();
 
-        solicitudes = data.solicitudes || [];
-        renderSolicitudes();
-      } catch (error) {
-        container.innerHTML = `<div style="padding:18px;color:#dc2626;">No fue posible conectar con el sistema.</div>`;
-      } finally {
-        loading.classList.add("hidden");
-      }
+    if (!data.success) {
+      container.innerHTML = `<div style="padding:18px;color:#dc2626;">${escapeHtml(data.message || "No fue posible obtener las solicitudes.")}</div>`;
+      return;
     }
+
+    solicitudes = data.solicitudes || [];
+
+    if (semana) {
+      solicitudes = solicitudes.filter(s => String(s.semana || "").trim() === semana);
+    }
+
+    renderSolicitudes();
+  } catch (error) {
+    container.innerHTML = `<div style="padding:18px;color:#dc2626;">No fue posible conectar con el sistema.</div>`;
+  } finally {
+    loading.classList.add("hidden");
+  }
+}
 
     function renderCalendar() {
       const container = document.getElementById("calendarContainer");
@@ -1985,6 +1993,16 @@ function renderSolicitudChip(item) {
       }
     }
 
+    function onWeekChange() {
+  const module = document.getElementById("moduleView").value;
+
+  if (module === "solicitudes") {
+    loadSolicitudes();
+  } else {
+    loadMoviles();
+  }
+}
+    
     initApp();
   </script>
 </body>
