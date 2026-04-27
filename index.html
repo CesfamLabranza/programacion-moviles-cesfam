@@ -1676,6 +1676,8 @@ function renderTripChip(cellItem) {
   const clase = cellItem.tipo === "retorno" ? "trip-chip retorno" : "trip-chip salida";
   const tag = cellItem.tipo === "retorno" ? "Retorno" : "Salida";
 
+  const hora = normalizarHora(cellItem.hora);
+
   const recorridoTexto =
     cellItem.item && Array.isArray(cellItem.item.paradas) && cellItem.item.paradas.length
       ? [...cellItem.item.paradas.map(p => p.destino), cellItem.destino].join(" → ")
@@ -1684,7 +1686,7 @@ function renderTripChip(cellItem) {
   return `
     <button type="button" class="${clase}" onclick="showTripDetail('${cellItem.id}')">
       <div class="chip-top">
-        <div class="chip-time">${escapeHtml(cellItem.hora || "--:--")}</div>
+        <div class="chip-time">${escapeHtml(hora || "--:--")}</div>
         <div class="chip-tag">${escapeHtml(tag)}</div>
       </div>
       <div class="chip-main">${escapeHtml(recorridoTexto)}</div>
@@ -1705,7 +1707,7 @@ function renderTripChip(cellItem) {
           <div class="detail-box">
             <h4>Datos generales</h4>
             <div class="detail-line"><strong>Día:</strong> ${escapeHtml(item.dia || "-")}</div>
-            <div class="detail-line"><strong>Fecha:</strong> ${escapeHtml(item.fecha || "-")}</div>
+            <div class="detail-line"><strong>Fecha:</strong> ${escapeHtml(normalizarFechaDMY(item.fechaISO || item.fecha) || "-")}</div>
             <div class="detail-line"><strong>Semana:</strong> ${escapeHtml(item.semana || "-")}</div>
             <div class="detail-line"><strong>Destino principal:</strong> ${escapeHtml(item.destino || "-")}</div>
             ${
@@ -1721,7 +1723,7 @@ function renderTripChip(cellItem) {
 
           <div class="detail-box" style="border-left:6px solid var(--primary);">
             <h4>Salida</h4>
-            <div class="detail-line"><strong>Hora salida:</strong> ${escapeHtml(item.horaSalida || "-")}</div>
+            <div class="detail-line"><strong>Hora salida:</strong> ${escapeHtml(normalizarHora(item.horaSalida) || "-")}</div>
             <div class="detail-line"><strong>Chofer salida:</strong> ${escapeHtml(item.choferSalida || "-")}</div>
             <div class="detail-line"><strong>Móvil salida:</strong> ${escapeHtml(item.movilSalida || "-")}</div>
             <div class="detail-line"><strong>Patente salida:</strong> ${escapeHtml(item.patenteSalida || "-")}</div>
@@ -1731,7 +1733,7 @@ function renderTripChip(cellItem) {
             <h4>Retorno</h4>
             <div class="detail-grid">
               <div>
-                <div class="detail-line"><strong>Hora retorno:</strong> ${escapeHtml(item.horaRetorno || "-")}</div>
+                <div class="detail-line"><strong>Hora retorno:</strong> ${escapeHtml(normalizarHora(item.horaRetorno) || "-")}</div>
                 <div class="detail-line"><strong>Chofer retorno:</strong> ${escapeHtml(item.choferRetorno || "-")}</div>
               </div>
               <div>
@@ -2178,7 +2180,54 @@ function renderTripChip(cellItem) {
     loadMoviles();
   }
 }
-    
+   function normalizarHora(valor) {
+  if (!valor) return "";
+
+  const texto = String(valor).trim();
+
+  if (/^\d{1,2}:\d{2}/.test(texto)) {
+    return texto.substring(0, 5).padStart(5, "0");
+  }
+
+  const fecha = new Date(texto);
+  if (!isNaN(fecha)) {
+    const hh = String(fecha.getHours()).padStart(2, "0");
+    const mm = String(fecha.getMinutes()).padStart(2, "0");
+    return `${hh}:${mm}`;
+  }
+
+  return texto;
+}
+
+function normalizarFechaISO(valor) {
+  if (!valor) return "";
+
+  const texto = String(valor).trim();
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) return texto;
+
+  if (/^\d{2}-\d{2}-\d{4}$/.test(texto)) {
+    const p = texto.split("-");
+    return `${p[2]}-${p[1]}-${p[0]}`;
+  }
+
+  const fecha = new Date(texto);
+  if (!isNaN(fecha)) {
+    const yyyy = fecha.getFullYear();
+    const mm = String(fecha.getMonth() + 1).padStart(2, "0");
+    const dd = String(fecha.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
+  return "";
+}
+
+function normalizarFechaDMY(valor) {
+  const iso = normalizarFechaISO(valor);
+  if (!iso) return "";
+  const p = iso.split("-");
+  return `${p[2]}-${p[1]}-${p[0]}`;
+} 
     initApp();
   </script>
 </body>
