@@ -1207,9 +1207,13 @@ async function loadSolicitudes() {
 
     solicitudes = data.solicitudes || [];
 
-    if (semana) {
-      solicitudes = solicitudes.filter(s => String(s.semana || "").trim() === semana);
-    }
+if (semana) {
+  solicitudes = solicitudes.filter(s => {
+    const fechaISO = normalizarFechaISO(s.fechaISO || s.fecha || "");
+    const semanaCalculada = fechaISO ? obtenerSemana(fechaISO) : String(s.semana || "").trim();
+    return semanaCalculada === semana;
+  });
+}
 
     renderSolicitudes();
   } catch (error) {
@@ -1778,7 +1782,7 @@ function renderTripChip(cellItem) {
 
           <div class="detail-box">
             <h4>Traslado solicitado</h4>
-            <div class="detail-line"><strong>Semana:</strong> ${escapeHtml(item.semana || "-")}</div>
+            <div class="detail-line"><strong>Semana:</strong> ${escapeHtml(obtenerSemana(normalizarFechaISO(item.fechaISO || item.fecha || "")) || item.semana || "-")}</div>
             <div class="detail-line"><strong>Fecha:</strong> ${escapeHtml(item.fecha || "-")}</div>
             <div class="detail-line"><strong>Día:</strong> ${escapeHtml(item.dia || "-")}</div>
             <div class="detail-line"><strong>Hora salida:</strong> ${escapeHtml(item.horaSalida || "-")}</div>
