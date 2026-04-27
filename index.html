@@ -420,11 +420,12 @@
   html, body {
     width: 100%;
     height: auto;
-    background: #fff !important;
     margin: 0 !important;
     padding: 0 !important;
+    background: #fff !important;
   }
 
+  /* Mostrar solo lo necesario */
   body * {
     visibility: hidden;
   }
@@ -436,22 +437,19 @@
     visibility: visible;
   }
 
+  /* Ocultar controles */
   .topbar,
   .toolbar,
   #loadingMoviles,
   #loadingSolicitudes,
   .modal-backdrop,
-  #btnPdf,
-  #btnCurrentWeek,
-  #btnRefreshProgramacion,
-  #btnRefreshSolicitudes,
-  #newButton,
-  #btnSolicitudExterna {
+  button,
+  select,
+  input {
     display: none !important;
   }
 
   #app {
-    display: block !important;
     padding: 0 !important;
     margin: 0 !important;
     width: 100% !important;
@@ -460,17 +458,16 @@
   #programacionSection,
   #solicitudesSection {
     position: absolute;
-    left: 0;
     top: 0;
+    left: 0;
     width: 100% !important;
   }
 
-  .calendar-wrap,
-  .solicitudes-table-wrap {
+  /* TABLA */
+  .calendar-wrap {
     width: 100% !important;
-    border: none !important;
     overflow: visible !important;
-    border-radius: 0 !important;
+    border: none !important;
   }
 
   .schedule-table {
@@ -484,7 +481,8 @@
   .schedule-table th,
   .schedule-table td {
     border: 1px solid #999 !important;
-    padding: 3px !important;
+    padding: 2px !important;
+    vertical-align: top !important;
     background: #fff !important;
     color: #000 !important;
   }
@@ -492,107 +490,81 @@
   .schedule-table thead th {
     background: #e5e7eb !important;
     font-size: 8px !important;
-    padding: 3px !important;
+    text-align: center !important;
   }
 
+  /* Columnas optimizadas */
   .driver-col {
-    width: 9% !important;
-    min-width: 9% !important;
-    max-width: 9% !important;
+    width: 8% !important;
     font-size: 7px !important;
-    padding: 3px !important;
   }
 
   .slot-col {
-    width: 6.5% !important;
-    min-width: 6.5% !important;
-    max-width: 6.5% !important;
+    width: 6% !important;
   }
 
+  /* CELDAS */
   .cell-wrap {
-    min-height: 45px !important;
+    min-height: 35px !important;
     padding: 2px !important;
     gap: 2px !important;
   }
 
+  /* TARJETAS → TEXTO PLANO */
   .trip-chip {
     display: block !important;
-    visibility: visible !important;
     width: 100% !important;
-    padding: 3px !important;
+    padding: 2px !important;
     margin: 0 0 2px 0 !important;
-    border-radius: 4px !important;
+    border: none !important;
+    background: transparent !important;
+    border-radius: 0 !important;
     box-shadow: none !important;
-    transform: none !important;
     font-size: 7px !important;
-    line-height: 1.15 !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
+    line-height: 1.1 !important;
     color: #000 !important;
   }
 
-  .trip-chip:hover {
-    transform: none !important;
-    box-shadow: none !important;
-  }
-
-  .trip-chip.salida {
-    border-left: 3px solid #2563eb !important;
-    background: #eef4ff !important;
-  }
-
-  .trip-chip.retorno {
-    border-left: 3px solid #16a34a !important;
-    background: #f0fdf4 !important;
-  }
-
-  .trip-chip.ok {
-    border-left: 3px solid #16a34a !important;
-    background: #ecfdf5 !important;
-  }
-
+  .trip-chip.salida,
+  .trip-chip.retorno,
+  .trip-chip.ok,
   .trip-chip.conflicto {
-    border-left: 3px solid #dc2626 !important;
-    background: #fef2f2 !important;
+    border: none !important;
+    background: transparent !important;
   }
 
+  /* ESTRUCTURA TEXTO */
   .chip-top {
-    display: flex !important;
-    justify-content: space-between !important;
-    gap: 2px !important;
+    display: block !important;
     margin-bottom: 1px !important;
   }
 
-  .chip-time,
-  .chip-main,
-  .chip-sub,
-  .chip-tag {
-    font-size: 7px !important;
-    line-height: 1.15 !important;
-  }
-
   .chip-time {
+    font-size: 7px !important;
     font-weight: bold !important;
   }
 
   .chip-main {
+    font-size: 7px !important;
     font-weight: bold !important;
   }
 
-  .chip-tag {
-    padding: 1px 3px !important;
-    border-radius: 4px !important;
-    background: #dbe7ff !important;
-    color: #000 !important;
+  .chip-sub {
+    font-size: 7px !important;
   }
 
-  .trip-chip .btn,
-  .trip-chip button,
-  .modal-actions,
-  .parada-remove {
+  .chip-tag {
     display: none !important;
   }
 
+  /* Ocultar botones internos */
+  .trip-chip button,
+  .trip-chip .btn,
+  .modal-actions {
+    display: none !important;
+  }
+
+  /* Quitar celdas vacías visualmente */
   .empty-cell {
     display: none !important;
   }
@@ -1700,26 +1672,28 @@ function renderSolicitudChip(item) {
       return hour < 12 ? "AM" : "PM";
     }
 
-    function renderTripChip(cellItem) {
-      const clase = cellItem.tipo === "retorno" ? "trip-chip retorno" : "trip-chip salida";
-      const tag = cellItem.tipo === "retorno" ? "Retorno" : "Salida";
-      const mainLine = `${cellItem.hora || "--:--"}`;
-      const recorridoTexto =
-        cellItem.item && Array.isArray(cellItem.item.paradas) && cellItem.item.paradas.length
-          ? [...cellItem.item.paradas.map(p => p.destino), cellItem.destino].join(" → ")
-          : (cellItem.destino || "Sin destino");
+function renderTripChip(cellItem) {
+  const clase = cellItem.tipo === "retorno" ? "trip-chip retorno" : "trip-chip salida";
+  const tag = cellItem.tipo === "retorno" ? "Retorno" : "Salida";
 
-      return `
-        <button type="button" class="${clase}" onclick="showTripDetail('${cellItem.id}')">
-          <div class="chip-top">
-            <div class="chip-time">${escapeHtml(mainLine)}</div>
-            <div class="chip-tag">${escapeHtml(tag)}</div>
-          </div>
-          <div class="chip-main">${escapeHtml(recorridoTexto)}</div>
-          <div class="chip-sub">${escapeHtml(cellItem.chofer || "Sin chofer")}</div>
-        </button>
-      `;
-    }
+  const recorridoTexto =
+    cellItem.item && Array.isArray(cellItem.item.paradas) && cellItem.item.paradas.length
+      ? [...cellItem.item.paradas.map(p => p.destino), cellItem.destino].join(" → ")
+      : (cellItem.destino || "Sin destino");
+
+  return `
+    <button type="button" class="${clase}" onclick="showTripDetail('${cellItem.id}')">
+      <div class="chip-top">
+        <div class="chip-time">${escapeHtml(cellItem.hora || "--:--")}</div>
+        <div class="chip-tag">${escapeHtml(tag)}</div>
+      </div>
+      <div class="chip-main">${escapeHtml(recorridoTexto)}</div>
+      <div class="chip-sub"><strong>Chofer:</strong> ${escapeHtml(cellItem.chofer || "Sin chofer")}</div>
+      <div class="chip-sub"><strong>Pasajeros:</strong> ${escapeHtml(cellItem.item?.pasajeros || "-")}</div>
+      <div class="chip-sub"><strong>Obs.:</strong> ${escapeHtml(cellItem.item?.observaciones || "-")}</div>
+    </button>
+  `;
+}
 
     function showTripDetail(id) {
       const item = programaciones.find(x => String(x.id) === String(id));
