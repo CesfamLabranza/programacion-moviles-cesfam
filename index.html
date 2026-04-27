@@ -1281,7 +1281,7 @@ async function loadSolicitudes() {
       let html = `<table class="schedule-table">`;
       html += `<thead><tr><th class="sticky-left driver-col" rowspan="2">Patente / Móvil</th>`;
       DIAS.forEach((dia, index) => {
-  html += `<th colspan="2">${escapeHtml(getWeeklyDayLabel(index))}</th>`;
+ html += `<th colspan="2">${getWeeklyDayLabel(index)}</th>`;
 });
       html += `</tr><tr>`;
       DIAS.forEach(() => {
@@ -1388,7 +1388,7 @@ function analizarDisponibilidadSolicitud(solicitud) {
       let html = `<table class="schedule-table">`;
       html += `<thead><tr><th class="sticky-left driver-col" rowspan="2">Unidad / Solicitante</th>`;
       DIAS.forEach((dia, index) => {
-  html += `<th colspan="2">${escapeHtml(getWeeklyDayLabel(index))}</th>`;
+ html += `<th colspan="2">${getWeeklyDayLabel(index)}</th>`;
 });
       html += `</tr><tr>`;
       DIAS.forEach(() => {
