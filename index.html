@@ -1278,7 +1278,9 @@ async function loadSolicitudes() {
       const patentes = getPatentesOrdenadas();
       let html = `<table class="schedule-table">`;
       html += `<thead><tr><th class="sticky-left driver-col" rowspan="2">Patente / Móvil</th>`;
-      DIAS.forEach(dia => html += `<th colspan="2">${dia}</th>`);
+      DIAS.forEach((dia, index) => {
+  html += `<th colspan="2">${escapeHtml(getWeeklyDayLabel(index))}</th>`;
+});
       html += `</tr><tr>`;
       DIAS.forEach(() => {
         html += `<th class="slot-col">MAÑANA (AM)</th>`;
@@ -1383,7 +1385,9 @@ function analizarDisponibilidadSolicitud(solicitud) {
 
       let html = `<table class="schedule-table">`;
       html += `<thead><tr><th class="sticky-left driver-col" rowspan="2">Unidad / Solicitante</th>`;
-      DIAS.forEach(dia => html += `<th colspan="2">${dia}</th>`);
+      DIAS.forEach((dia, index) => {
+  html += `<th colspan="2">${escapeHtml(getWeeklyDayLabel(index))}</th>`;
+});
       html += `</tr><tr>`;
       DIAS.forEach(() => {
         html += `<th class="slot-col">MAÑANA (AM)</th>`;
@@ -2218,6 +2222,43 @@ function normalizarFechaDMY(valor) {
   const p = iso.split("-");
   return `${p[2]}-${p[1]}-${p[0]}`;
 } 
+
+    function getMondayOfISOWeek(weekValue) {
+  const match = String(weekValue || "").match(/^(\d{4})-W(\d{2})$/);
+  if (!match) return null;
+
+  const year = Number(match[1]);
+  const week = Number(match[2]);
+
+  const simple = new Date(year, 0, 1 + (week - 1) * 7);
+  const day = simple.getDay();
+  const diff = simple.getDate() - day + (day === 0 ? -6 : 1);
+
+  const monday = new Date(simple);
+  monday.setDate(diff);
+  monday.setHours(0, 0, 0, 0);
+
+  return monday;
+}
+
+function formatDateDMYFromDate(date) {
+  const dd = String(date.getDate()).padStart(2, "0");
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const yyyy = date.getFullYear();
+  return `${dd}-${mm}-${yyyy}`;
+}
+
+function getWeeklyDayLabel(diaIndex) {
+  const weekValue = document.getElementById("weekFilter").value;
+  const monday = getMondayOfISOWeek(weekValue);
+
+  if (!monday) return DIAS[diaIndex];
+
+  const date = new Date(monday);
+  date.setDate(monday.getDate() + diaIndex);
+
+  return `${DIAS[diaIndex]} ${formatDateDMYFromDate(date)}`;
+}
     initApp();
   </script>
 </body>
