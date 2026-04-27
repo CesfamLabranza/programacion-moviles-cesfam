@@ -478,7 +478,9 @@
     font-size: 8px !important;
   }
 
-  .schedule-table th,
+  .schedule-table th {
+  white-space: normal !important;
+}
   .schedule-table td {
     border: 1px solid #999 !important;
     padding: 2px !important;
@@ -2223,7 +2225,7 @@ function normalizarFechaDMY(valor) {
   return `${p[2]}-${p[1]}-${p[0]}`;
 } 
 
-    function getMondayOfISOWeek(weekValue) {
+function getMondayOfISOWeek(weekValue) {
   const match = String(weekValue || "").match(/^(\d{4})-W(\d{2})$/);
   if (!match) return null;
 
@@ -2239,6 +2241,25 @@ function normalizarFechaDMY(valor) {
   monday.setHours(0, 0, 0, 0);
 
   return monday;
+}
+
+function formatDateDMYFromDate(date) {
+  const dd = String(date.getDate()).padStart(2, "0");
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const yyyy = date.getFullYear();
+  return `${dd}-${mm}-${yyyy}`;
+}
+
+function getWeeklyDayLabel(index) {
+  const weekValue = document.getElementById("weekFilter").value;
+  const monday = getMondayOfISOWeek(weekValue);
+
+  if (!monday) return DIAS[index];
+
+  const date = new Date(monday);
+  date.setDate(monday.getDate() + index);
+
+  return `${DIAS[index]}<br>${formatDateDMYFromDate(date)}`;
 }
 
 function formatDateDMYFromDate(date) {
