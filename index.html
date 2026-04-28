@@ -125,10 +125,10 @@
 .cell-wrap{
   min-height:190px;
   padding:8px;
-  display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(130px, 1fr));
+  display:flex;
+  flex-wrap:wrap;
   gap:8px;
-  align-items:start;
+  align-items:flex-start;
 }
     .empty-cell{
       color:var(--muted);
@@ -150,6 +150,7 @@
 .trip-chip{
   width:100%;
   min-width:0;
+  text-align:left;
 }
     .trip-chip:hover{
       transform:translateY(-1px);
@@ -199,6 +200,21 @@
       line-height:1.35;
       color:#374151;
     }
+
+.chip-main,
+.chip-sub,
+.chip-time{
+  text-align:left;
+}
+
+.trip-group{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  width:fit-content;
+  min-width:130px;
+}
+    
     .btn{
       border:none;
       border-radius:10px;
@@ -1264,11 +1280,11 @@ if (semana) {
         html += `<td class="driver-col sticky-left"><div style="font-weight:bold;">${escapeHtml(row.patente)}</div><div style="font-size:12px;color:#6b7280;margin-top:4px;">${escapeHtml(row.movil)}</div></td>`;
 
         html += `<td class="slot-col"><div class="cell-wrap">`;
-        amItems.length ? amItems.forEach(cellItem => html += renderTripChip(cellItem)) : html += `<div class="empty-cell"></div>`;
+        amItems.length ? html += renderGroupedCellItems(amItems) : html += `<div class="empty-cell"></div>`;
         html += `</div></td>`;
 
         html += `<td class="slot-col"><div class="cell-wrap">`;
-        pmItems.length ? pmItems.forEach(cellItem => html += renderTripChip(cellItem)) : html += `<div class="empty-cell"></div>`;
+        pmItems.length ? html += renderGroupedCellItems(pmItems) : html += `<div class="empty-cell"></div>`;
         html += `</div></td>`;
 
         html += `</tr>`;
@@ -1309,7 +1325,7 @@ if (semana) {
               if (!items.length) {
                 html += `<div class="empty-cell"></div>`;
               } else {
-                items.forEach(cellItem => html += renderTripChip(cellItem));
+                html += renderGroupedCellItems(items);
               }
               html += `</div></td>`;
             });
@@ -2325,6 +2341,33 @@ function getWeeklyDayLabel(diaIndex) {
   date.setDate(monday.getDate() + diaIndex);
 
   return `${DIAS[diaIndex]} ${formatDateDMYFromDate(date)}`;
+}
+    function renderGroupedCellItems(items) {
+  const grupos = new Map();
+
+  items.forEach(cellItem => {
+    const key = String(cellItem.id || "");
+    if (!grupos.has(key)) grupos.set(key, []);
+    grupos.get(key).push(cellItem);
+  });
+
+  let html = "";
+
+  grupos.forEach(groupItems => {
+    groupItems.sort((a, b) => {
+      if (a.tipo === "salida" && b.tipo === "retorno") return -1;
+      if (a.tipo === "retorno" && b.tipo === "salida") return 1;
+      return String(a.hora || "").localeCompare(String(b.hora || ""));
+    });
+
+    html += `<div class="trip-group">`;
+    groupItems.forEach(cellItem => {
+      html += renderTripChip(cellItem);
+    });
+    html += `</div>`;
+  });
+
+  return html;
 }
     initApp();
   </script>
