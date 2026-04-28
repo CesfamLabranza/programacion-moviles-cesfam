@@ -115,20 +115,15 @@
       font-weight:bold;
       background:#f9fbff !important;
     }
-    .slot-col{
-      width:180px;
-      min-width:180px;
-      max-width:180px;
-    }
+.slot-col{
+  width:360px;
+  min-width:360px;
+  max-width:360px;
+}
 .cell-wrap{
   min-height:190px;
   padding:8px;
-
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-
-  align-items:flex-start;
+  display:block;
 }
     .empty-cell{
       color:var(--muted);
@@ -208,13 +203,18 @@
   text-align:left;
 }
 
+.trip-columns{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
+  gap:10px;
+  align-items:start;
+}
+
 .trip-group{
   display:flex;
   flex-direction:column;
   gap:4px;
-  width:160px; 
-  min-width:130px;
-  flex-shrink:0;
+  min-width:0;
 }
     
     .btn{
@@ -2346,7 +2346,8 @@ function getWeeklyDayLabel(diaIndex) {
 
   return `${DIAS[diaIndex]} ${formatDateDMYFromDate(date)}`;
 }
-    function renderGroupedCellItems(items) {
+
+function renderGroupedCellItems(items) {
   const grupos = new Map();
 
   items.forEach(cellItem => {
@@ -2355,9 +2356,15 @@ function getWeeklyDayLabel(diaIndex) {
     grupos.get(key).push(cellItem);
   });
 
-  let html = "";
+  const gruposOrdenados = Array.from(grupos.values()).sort((a, b) => {
+    const horaA = String(a[0]?.hora || "");
+    const horaB = String(b[0]?.hora || "");
+    return horaA.localeCompare(horaB);
+  });
 
-  grupos.forEach(groupItems => {
+  let html = `<div class="trip-columns">`;
+
+  gruposOrdenados.forEach(groupItems => {
     groupItems.sort((a, b) => {
       if (a.tipo === "salida" && b.tipo === "retorno") return -1;
       if (a.tipo === "retorno" && b.tipo === "salida") return 1;
@@ -2371,8 +2378,10 @@ function getWeeklyDayLabel(diaIndex) {
     html += `</div>`;
   });
 
+  html += `</div>`;
   return html;
 }
+    
     initApp();
   </script>
 </body>
