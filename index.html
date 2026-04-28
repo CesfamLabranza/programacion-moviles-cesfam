@@ -119,13 +119,14 @@
       min-width:180px;
       max-width:180px;
     }
-    .cell-wrap{
-      min-height:190px;
-      padding:8px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
+.cell-wrap{
+  min-height:190px;
+  padding:8px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(130px, 1fr));
+  gap:8px;
+  align-items:start;
+}
     .empty-cell{
       color:var(--muted);
       font-size:12px;
@@ -143,17 +144,10 @@
   border: 1px solid #fca5a5;
   border-left: 5px solid #dc2626;
 }
-    .trip-chip{
-      width:100%;
-      border:1px solid var(--chip-border);
-      background:var(--chip);
-      border-radius:12px;
-      padding:8px;
-      text-align:left;
-      cursor:pointer;
-      transition:.15s ease;
-      color:var(--text);
-    }
+.trip-chip{
+  width:100%;
+  min-width:0;
+}
     .trip-chip:hover{
       transform:translateY(-1px);
       box-shadow:0 6px 14px rgba(37,99,235,.10);
@@ -470,8 +464,13 @@
     border: none !important;
   }
 
+  .schedule-table tr,
+.schedule-table td {
+  page-break-inside: avoid !important;
+  break-insside: avoid !important;
+}
   .schedule-table {
-    width: 100% !important;
+    width: 100vw !important;
     min-width: 100% !important;
     table-layout: fixed !important;
     border-collapse: collapse !important;
@@ -498,7 +497,7 @@
   /* Columnas optimizadas */
   .driver-col {
     width: 8% !important;
-    font-size: 7px !important;
+    font-size: 8px !important;
   }
 
   .slot-col {
@@ -506,11 +505,11 @@
   }
 
   /* CELDAS */
-  .cell-wrap {
-    min-height: 35px !important;
-    padding: 2px !important;
-    gap: 2px !important;
-  }
+.cell-wrap{
+  min-height:25px !important;
+  padding:2px !important;
+  display:block !important;
+}
 
   /* TARJETAS → TEXTO PLANO */
   .trip-chip {
@@ -2079,6 +2078,53 @@ function getItemDateISO(item) {
         patenteRetorno: document.getElementById("approvePatenteRetorno").value.trim()
       };
 
+const solicitud = solicitudes.find(x => String(x.id) === String(id));
+
+const existeConflicto = solicitud && programaciones.some(p => {
+  const mismaFecha =
+    normalizarFechaISO(p.fechaISO || p.fecha || "") ===
+    normalizarFechaISO(solicitud.fechaISO || solicitud.fecha || "");
+
+  if (!mismaFecha) return false;
+
+  const inicioSolicitud = normalizarHora(solicitud.horaSalida);
+  const finSolicitud = normalizarHora(solicitud.horaRetorno);
+  const inicioProg = normalizarHora(p.horaSalida);
+  const finProg = normalizarHora(p.horaRetorno);
+
+  const cruzaHorario =
+    inicioSolicitud < finProg &&
+    finSolicitud > inicioProg;
+
+  const mismoChofer =
+    asignacion.choferSalida !== "Pendiente" &&
+    (
+      asignacion.choferSalida === p.choferSalida ||
+      asignacion.choferSalida === p.choferRetorno ||
+      asignacion.choferRetorno === p.choferSalida ||
+      asignacion.choferRetorno === p.choferRetorno
+    );
+
+  const mismoMovil =
+    asignacion.movilSalida !== "Pendiente" &&
+    (
+      asignacion.movilSalida === p.movilSalida ||
+      asignacion.movilSalida === p.movilRetorno ||
+      asignacion.movilRetorno === p.movilSalida ||
+      asignacion.movilRetorno === p.movilRetorno
+    );
+
+  return cruzaHorario && (mismoChofer || mismoMovil);
+});
+
+if (existeConflicto) {
+  const continuar = confirm(
+    "Advertencia: ya existe una programación con el mismo horario, móvil o chofer asignado. ¿Desea aprobar de todas formas?"
+  );
+
+  if (!continuar) return;
+}
+      
       try {
         const res = await fetch(API, {
           method: "POST",
