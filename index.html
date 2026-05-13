@@ -963,6 +963,8 @@
     let currentUser = null;
     let programaciones = [];
     let solicitudes = [];
+    const cacheProgramacion = {};
+const cacheSolicitudes = {};
 
     const DIAS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
     const BLOQUES = ["AM", "PM"];
@@ -1101,8 +1103,7 @@ function asignarMovilPorChofer(choferId, movilId, patenteId) {
         document.getElementById("newButton").classList.remove("hidden");
       }
 
-      updateViewControls();
-await loadMoviles();
+updateViewControls();
 toggleModuleView();
     }
 
@@ -1172,7 +1173,13 @@ toggleModuleView();
         semana = obtenerSemana(selectedDate);
         document.getElementById("weekFilter").value = semana;
       }
+const cacheKey = semana;
 
+if (cacheProgramacion[cacheKey]) {
+  programaciones = cacheProgramacion[cacheKey];
+  renderCalendar();
+  return;
+}
       const loading = document.getElementById("loadingMoviles");
       const container = document.getElementById("calendarContainer");
 
@@ -1196,6 +1203,7 @@ toggleModuleView();
         }
 
         programaciones = data.programacion || [];
+        cacheProgramacion[cacheKey] = programaciones;
         renderCalendar();
       } catch (error) {
         container.innerHTML = `<div class="panel" style="padding:18px;">No fue posible conectar con el sistema.</div>`;
@@ -1209,7 +1217,13 @@ async function loadSolicitudes() {
 
   const estado = document.getElementById("solicitudEstadoFilter").value || "";
   const semana = document.getElementById("weekFilter").value || "";
+const cacheKey = `${semana}_${estado}`;
 
+if (cacheSolicitudes[cacheKey]) {
+  solicitudes = cacheSolicitudes[cacheKey];
+  renderSolicitudes();
+  return;
+}
   const loading = document.getElementById("loadingSolicitudes");
   const container = document.getElementById("solicitudesContainer");
 
@@ -1243,7 +1257,7 @@ if (semana) {
     return semanaCalculada === semana;
   });
 }
-
+cacheSolicitudes[cacheKey] = solicitudes;
     renderSolicitudes();
   } catch (error) {
     container.innerHTML = `<div style="padding:18px;color:#dc2626;">No fue posible conectar con el sistema.</div>`;
@@ -2389,7 +2403,10 @@ function renderGroupedCellItems(items) {
   html += `</div>`;
   return html;
 }
-    
+   function limpiarCacheMoviles() {
+  Object.keys(cacheProgramacion).forEach(k => delete cacheProgramacion[k]);
+  Object.keys(cacheSolicitudes).forEach(k => delete cacheSolicitudes[k]);
+} 
     initApp();
   </script>
 </body>
