@@ -712,7 +712,7 @@
 
             <div>
               <label>Chofer salida</label>
-              <select id="movilChoferSalida" required onchange="setPendienteIfNeeded('movilChoferSalida','movilSalida','movilPatenteSalida')">
+              <select id="movilChoferSalida" required onchange="setPendienteIfNeeded('movilChoferSalida','movilSalida','movilPatenteSalida'); asignarMovilPorChofer('movilChoferSalida','movilSalida','movilPatenteSalida')">
                 <option value="">Seleccione</option>
                 <option value="Pendiente">Pendiente</option>
                 <option>Hector Gomez Morales</option>
@@ -759,7 +759,7 @@
 
             <div>
               <label>Chofer retorno</label>
-              <select id="movilChoferRetorno" required onchange="setPendienteIfNeeded('movilChoferRetorno','movilRetorno','movilPatenteRetorno')">
+              <select id="movilChoferRetorno" required onchange="setPendienteIfNeeded('movilChoferRetorno','movilRetorno','movilPatenteRetorno'); asignarMovilPorChofer('movilChoferRetorno','movilRetorno','movilPatenteRetorno')">
                 <option value="">Seleccione</option>
                 <option value="Pendiente">Pendiente</option>
                 <option>Hector Gomez Morales</option>
@@ -836,7 +836,7 @@
           <div class="grid-2">
             <div>
               <label>Chofer salida</label>
-              <select id="approveChoferSalida" required onchange="setPendienteIfNeeded('approveChoferSalida','approveMovilSalida','approvePatenteSalida')">
+              <select id="approveChoferSalida" required onchange="setPendienteIfNeeded('approveChoferSalida','approveMovilSalida','approvePatenteSalida'); asignarMovilPorChofer('approveChoferSalida','approveMovilSalida','approvePatenteSalida')">
                 <option value="">Seleccione</option>
                 <option value="Pendiente">Pendiente</option>
                 <option>Hector Gomez Morales</option>
@@ -878,7 +878,7 @@
           <div class="grid-2">
             <div>
               <label>Chofer retorno</label>
-              <select id="approveChoferRetorno" required onchange="setPendienteIfNeeded('approveChoferRetorno','approveMovilRetorno','approvePatenteRetorno')">
+              <select id="approveChoferRetorno" required onchange="setPendienteIfNeeded('approveChoferRetorno','approveMovilRetorno','approvePatenteRetorno'); asignarMovilPorChofer('approveChoferRetorno','approveMovilRetorno','approvePatenteRetorno')">
                 <option value="">Seleccione</option>
                 <option value="Pendiente">Pendiente</option>
                 <option>Hector Gomez Morales</option>
@@ -975,7 +975,20 @@
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
     }
+function asignarMovilPorChofer(choferId, movilId, patenteId) {
+  const chofer = document.getElementById(choferId).value;
+  const movilSelect = document.getElementById(movilId);
 
+  if (chofer === "Hector Gomez Morales") {
+    movilSelect.value = "Camioneta 1";
+  } else if (chofer === "Luis Muñoz Cofre") {
+    movilSelect.value = "Furgon";
+  } else if (chofer === "Isaias Luengo Riquelme") {
+    movilSelect.value = "Camioneta 2";
+  }
+
+  updatePatenteByMovil(movilId, patenteId);
+}
     function updatePatenteByMovil(movilId, patenteId) {
       const movil = document.getElementById(movilId).value;
       const patente = MOVILES_PATENTES[movil] || "";
