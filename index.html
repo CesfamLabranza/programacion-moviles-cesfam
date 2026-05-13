@@ -577,18 +577,12 @@
     font-size: 7px !important;
   }
 
-  .chip-tag {
-    display: none !important;
-  }
-
-  /* Ocultar botones internos */
   .trip-chip button,
   .trip-chip .btn,
   .modal-actions {
     display: none !important;
   }
 
-  /* Quitar celdas vacías visualmente */
   .empty-cell {
     display: none !important;
   }
@@ -1717,10 +1711,11 @@ function renderTripChip(cellItem) {
 
   return `
     <button type="button" class="${clase}" onclick="showTripDetail('${cellItem.id}')">
-      <div class="chip-top">
-        <div class="chip-time">${escapeHtml(hora || "--:--")}</div>
-        <div class="chip-tag">${escapeHtml(tag)}</div>
-      </div>
+<div class="chip-top">
+  <div class="chip-time">
+    ${escapeHtml(tag)} · ${escapeHtml(hora || "--:--")}
+  </div>
+</div>
       <div class="chip-main">${escapeHtml(recorridoTexto)}</div>
       <div class="chip-sub"><strong>Chofer:</strong> ${escapeHtml(cellItem.chofer || "Sin chofer")}</div>
       <div class="chip-sub"><strong>Pasajeros:</strong> ${escapeHtml(cellItem.item?.pasajeros || "-")}</div>
