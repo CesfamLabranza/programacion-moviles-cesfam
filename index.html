@@ -2189,7 +2189,10 @@ if (existeConflicto) {
     "Advertencia: ya existe una programación con el mismo horario, móvil o chofer asignado. ¿Desea aprobar de todas formas?"
   );
 
-  if (!continuar) return;
+  if (!continuar) {
+  resetButtonLoading(submitBtn);
+  return;
+}
 }
       
       try {
