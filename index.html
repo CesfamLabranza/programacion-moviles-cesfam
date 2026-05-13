@@ -1084,7 +1084,24 @@ function asignarMovilPorChofer(choferId, movilId, patenteId) {
       updateViewControls();
       loadMoviles();
     }
+function setButtonLoading(button, loadingText = "Cargando...") {
+  if (!button) return;
 
+  button.dataset.originalText = button.textContent;
+  button.disabled = true;
+  button.textContent = loadingText;
+  button.style.opacity = "0.7";
+  button.style.cursor = "not-allowed";
+}
+
+function resetButtonLoading(button) {
+  if (!button) return;
+
+  button.disabled = false;
+  button.textContent = button.dataset.originalText || "Guardar";
+  button.style.opacity = "1";
+  button.style.cursor = "pointer";
+}
     async function initApp() {
       const ok = getUserFromURL();
       if (!ok) return;
@@ -1801,7 +1818,7 @@ function renderTripChip(cellItem) {
         ${isAdmin() ? `
           <div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap;">
             <button class="btn btn-secondary" onclick="closeDetailModal(); editMovil('${item.id}')">Modificar</button>
-            <button class="btn btn-danger" onclick="closeDetailModal(); deleteMovil('${item.id}')">Eliminar</button>
+            <button class="btn btn-danger" onclick="closeDetailModal(); deleteMovil('${item.id}', this)">Eliminar</button>
           </div>
         ` : ``}
       `;
@@ -2017,7 +2034,8 @@ function getItemDateISO(item) {
 
     async function saveMovilProgramacion(event) {
       event.preventDefault();
-
+const submitBtn = event.submitter;
+setButtonLoading(submitBtn, "Guardando...");
       const errorEl = document.getElementById("movilFormError");
       errorEl.classList.add("hidden");
 
@@ -2102,15 +2120,18 @@ closeMovilModal();
 limpiarCacheMoviles();
 await loadMoviles();
 alert(data.message);
-      } catch (error) {
-        errorEl.textContent = "No fue posible conectar con el sistema.";
-        errorEl.classList.remove("hidden");
-      }
+} catch (error) {
+  errorEl.textContent = "No fue posible conectar con el sistema.";
+  errorEl.classList.remove("hidden");
+} finally {
+  resetButtonLoading(submitBtn);
+}
     }
 
     async function approveSolicitud(event) {
       event.preventDefault();
-
+const submitBtn = event.submitter;
+setButtonLoading(submitBtn, "Aprobando...");
       const id = document.getElementById("approveSolicitudId").value;
       const errorEl = document.getElementById("approveFormError");
       errorEl.classList.add("hidden");
@@ -2195,15 +2216,18 @@ limpiarCacheMoviles();
 await loadSolicitudes();
 await loadMoviles();
         alert(data.message);
-      } catch (error) {
-        errorEl.textContent = "No fue posible conectar con el sistema.";
-        errorEl.classList.remove("hidden");
-      }
+} catch (error) {
+  errorEl.textContent = "No fue posible conectar con el sistema.";
+  errorEl.classList.remove("hidden");
+} finally {
+  resetButtonLoading(submitBtn);
+}
     }
 
     async function rejectSolicitud(event) {
       event.preventDefault();
-
+const submitBtn = event.submitter;
+setButtonLoading(submitBtn, "Rechazando...");
       const id = document.getElementById("rejectSolicitudId").value;
       const motivo = document.getElementById("rejectMotivo").value.trim();
       const errorEl = document.getElementById("rejectFormError");
@@ -2232,15 +2256,17 @@ closeRejectModal();
 limpiarCacheMoviles();
 await loadSolicitudes();
         alert(data.message);
-      } catch (error) {
-        errorEl.textContent = "No fue posible conectar con el sistema.";
-        errorEl.classList.remove("hidden");
-      }
+} catch (error) {
+  errorEl.textContent = "No fue posible conectar con el sistema.";
+  errorEl.classList.remove("hidden");
+} finally {
+  resetButtonLoading(submitBtn);
+}
     }
 
-    async function deleteMovil(id) {
+    async function deleteMovil(id, button) {
       if (!confirm("¿Desea eliminar esta programación?")) return;
-
+setButtonLoading(button, "Eliminando...");
       try {
         const res = await fetch(API, {
           method: "POST",
@@ -2261,9 +2287,11 @@ await loadSolicitudes();
 limpiarCacheMoviles();
 await loadMoviles();
 alert(data.message);
-      } catch (error) {
-        alert("No fue posible conectar con el sistema.");
-      }
+} catch (error) {
+  alert("No fue posible conectar con el sistema.");
+} finally {
+  resetButtonLoading(button);
+}
     }
 
     function onWeekChange() {
