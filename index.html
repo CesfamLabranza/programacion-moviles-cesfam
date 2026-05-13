@@ -2098,9 +2098,10 @@ function getItemDateISO(item) {
           return;
         }
 
-        closeMovilModal();
-        await loadMoviles();
-        alert(data.message);
+closeMovilModal();
+limpiarCacheMoviles();
+await loadMoviles();
+alert(data.message);
       } catch (error) {
         errorEl.textContent = "No fue posible conectar con el sistema.";
         errorEl.classList.remove("hidden");
@@ -2189,9 +2190,10 @@ if (existeConflicto) {
           return;
         }
 
-        closeApproveModal();
-        await loadSolicitudes();
-        await loadMoviles();
+closeApproveModal();
+limpiarCacheMoviles();
+await loadSolicitudes();
+await loadMoviles();
         alert(data.message);
       } catch (error) {
         errorEl.textContent = "No fue posible conectar con el sistema.";
