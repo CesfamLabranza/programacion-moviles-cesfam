@@ -2228,8 +2228,9 @@ await loadMoviles();
           return;
         }
 
-        closeRejectModal();
-        await loadSolicitudes();
+closeRejectModal();
+limpiarCacheMoviles();
+await loadSolicitudes();
         alert(data.message);
       } catch (error) {
         errorEl.textContent = "No fue posible conectar con el sistema.";
@@ -2257,8 +2258,9 @@ await loadMoviles();
           return;
         }
 
-        await loadMoviles();
-        alert(data.message);
+limpiarCacheMoviles();
+await loadMoviles();
+alert(data.message);
       } catch (error) {
         alert("No fue posible conectar con el sistema.");
       }
