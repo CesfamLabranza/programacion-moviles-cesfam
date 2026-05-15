@@ -1273,7 +1273,7 @@ const res = await fetch(API, {
     action: "getSolicitudesMoviles",
     user: currentUser,
     estado: filtroEstadoSolicitudes,
-    semana: selectedWeek
+    semana: selectedWeek || ""
   })
 });
 
