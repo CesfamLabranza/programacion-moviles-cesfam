@@ -1027,27 +1027,44 @@ function asignarMovilPorChofer(choferId, movilId, patenteId) {
       }
     }
 
-    function getUserFromURL() {
-      const params = new URLSearchParams(window.location.search);
-      const userParam = params.get("user");
+function getUserFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const userParam = params.get("user");
 
-if (!userParam) {
-  const savedUser = localStorage.getItem('currentUser');
-  if (!savedUser) return false;
-
-  currentUser = JSON.parse(savedUser);
-  window.currentUser = currentUser;
-  return true;
-}
-
-      try {
-        currentUser = JSON.parse(decodeURIComponent(userParam));
-        window.currentUser = currentUser;
-        return true;
-      } catch (e) {
-        return false;
-      }
+  try {
+    if (userParam) {
+      currentUser = JSON.parse(decodeURIComponent(userParam));
+      localStorage.setItem("currentUser", JSON.stringify(currentUser));
+      window.currentUser = currentUser;
+      return true;
     }
+
+    const savedUser = localStorage.getItem("currentUser");
+
+    if (savedUser) {
+      currentUser = JSON.parse(savedUser);
+      window.currentUser = currentUser;
+      return true;
+    }
+
+    document.body.innerHTML = `
+      <div style="padding:30px;font-family:Arial;color:#dc2626;">
+        No se pudo iniciar sesión. Vuelva a ingresar desde la página principal.
+      </div>
+    `;
+
+    return false;
+
+  } catch (e) {
+    document.body.innerHTML = `
+      <div style="padding:30px;font-family:Arial;color:#dc2626;">
+        Error al leer la sesión. Vuelva a ingresar desde la página principal.
+      </div>
+    `;
+
+    return false;
+  }
+}
 
     function isAdmin() {
       return String(currentUser?.rol || "").toLowerCase() === "administrador";
@@ -1105,8 +1122,8 @@ function resetButtonLoading(button) {
   button.style.cursor = "pointer";
 }
     async function initApp() {
-      const ok = getUserFromURL();
-      if (!ok) return;
+const ok = getUserFromURL();
+if (!ok) return;
 
       document.getElementById("app").classList.remove("hidden");
       document.getElementById("loggedUserName").textContent =
