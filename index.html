@@ -1267,15 +1267,15 @@ if (cacheSolicitudes[cacheKey]) {
   container.innerHTML = "";
 
   try {
-    const res = await fetch(API, {
-      method: "POST",
-      body: JSON.stringify({
-        action: "getSolicitudesMoviles",
-        user: currentUser,
-        estado: estado,
-        semana: semana
-      })
-    });
+const res = await fetch(API, {
+  method: "POST",
+  body: JSON.stringify({
+    action: "getSolicitudesMoviles",
+    user: currentUser,
+    estado: filtroEstadoSolicitudes,
+    semana: selectedWeek
+  })
+});
 
     const data = await res.json();
 
