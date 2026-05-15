@@ -1031,9 +1031,14 @@ function asignarMovilPorChofer(choferId, movilId, patenteId) {
       const params = new URLSearchParams(window.location.search);
       const userParam = params.get("user");
 
-      if (!userParam) {
-        return false;
-      }
+if (!userParam) {
+  const savedUser = localStorage.getItem('currentUser');
+  if (!savedUser) return false;
+
+  currentUser = JSON.parse(savedUser);
+  window.currentUser = currentUser;
+  return true;
+}
 
       try {
         currentUser = JSON.parse(decodeURIComponent(userParam));
