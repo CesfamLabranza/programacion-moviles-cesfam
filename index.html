@@ -1889,6 +1889,21 @@ function renderTripChip(cellItem) {
             <div class="detail-line"><strong>Observaciones:</strong> ${escapeHtml(item.observaciones || "-")}</div>
           </div>
         </div>
+        ${
+          item.estado === "Pendiente"
+            ? `
+              <div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="btn btn-primary" onclick="closeDetailModal(); openApproveModal('${item.id}')">
+                  Aprobar
+                </button>
+
+                <button class="btn btn-danger" onclick="closeDetailModal(); openRejectModal('${item.id}')">
+                  Rechazar
+                </button>
+              </div>
+            `
+            : ""
+        }
       `;
 
       document.getElementById("detailModalBackdrop").classList.remove("hidden");
