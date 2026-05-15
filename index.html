@@ -1011,7 +1011,7 @@ function asignarMovilPorChofer(choferId, movilId, patenteId) {
   const viewMode = document.getElementById("viewMode").value;
 
   if (module === "solicitudes" && estado !== "Pendiente") {
-    alert("El PDF está pensado para solicitudes pendientes por semana.");
+    showToast("El PDF está pensado para solicitudes pendientes por semana.");
     return;
   }
 
@@ -1033,7 +1033,7 @@ function asignarMovilPorChofer(choferId, movilId, patenteId) {
       const userParam = params.get("user");
 
       if (!userParam) {
-        alert("No se recibió la sesión del usuario.");
+        showToast("No se recibió la sesión del usuario.", "error");
         return false;
       }
 
@@ -1042,7 +1042,7 @@ function asignarMovilPorChofer(choferId, movilId, patenteId) {
         window.currentUser = currentUser;
         return true;
       } catch (e) {
-        alert("No fue posible leer la sesión del usuario.");
+        showToast("No fue posible leer la sesión del usuario.", "error");
         return false;
       }
     }
@@ -1101,6 +1101,49 @@ function resetButtonLoading(button) {
   button.textContent = button.dataset.originalText || "Guardar";
   button.style.opacity = "1";
   button.style.cursor = "pointer";
+}
+    function showToast(message, type = "success") {
+  const toast = document.createElement("div");
+
+  toast.textContent = message;
+
+  toast.style.position = "fixed";
+  toast.style.bottom = "20px";
+  toast.style.right = "20px";
+  toast.style.padding = "14px 18px";
+  toast.style.borderRadius = "12px";
+  toast.style.color = "#fff";
+  toast.style.fontWeight = "bold";
+  toast.style.fontSize = "14px";
+  toast.style.zIndex = "99999";
+  toast.style.boxShadow = "0 8px 20px rgba(0,0,0,.25)";
+  toast.style.opacity = "0";
+  toast.style.transform = "translateY(10px)";
+  toast.style.transition = "all .25s ease";
+
+  if (type === "error") {
+    toast.style.background = "#dc2626";
+  } else if (type === "warning") {
+    toast.style.background = "#d97706";
+  } else {
+    toast.style.background = "#16a34a";
+  }
+
+  document.body.appendChild(toast);
+
+  requestAnimationFrame(() => {
+    toast.style.opacity = "1";
+    toast.style.transform = "translateY(0)";
+  });
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateY(10px)";
+  }, 2500);
+
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
 }
     async function initApp() {
       const ok = getUserFromURL();
@@ -2283,7 +2326,7 @@ setButtonLoading(button, "Eliminando...");
         const data = await res.json();
 
         if (!data.success) {
-          alert(data.message || "No fue posible eliminar.");
+          showToast(data.message || "Programación eliminada.");
           return;
         }
 
@@ -2291,7 +2334,7 @@ limpiarCacheMoviles();
 await loadMoviles();
 alert(data.message);
 } catch (error) {
-  alert("No fue posible conectar con el sistema.");
+  showToast("No fue posible conectar con el sistema.", "error");
 } finally {
   resetButtonLoading(button);
 }
