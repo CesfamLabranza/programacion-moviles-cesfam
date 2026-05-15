@@ -1226,9 +1226,8 @@ if (cacheProgramacion[cacheKey]) {
 const res = await fetch(API, {
   method: "POST",
   body: JSON.stringify({
-    action: "getSolicitudesMoviles",
+    action: "getMoviles",
     user: currentUser,
-    estado: estado,
     semana: semana
   })
 });
@@ -1274,8 +1273,8 @@ const res = await fetch(API, {
   body: JSON.stringify({
     action: "getSolicitudesMoviles",
     user: currentUser,
-    estado: filtroEstadoSolicitudes,
-    semana: selectedWeek || ""
+    estado: estado,
+    semana: semana
   })
 });
 
