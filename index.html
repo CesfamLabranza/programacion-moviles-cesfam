@@ -2283,31 +2283,35 @@ await loadSolicitudes();
 }
     }
 
-    async function deleteMovil(id, button) {
-      if (!confirm("¿Desea eliminar esta programación?")) return;
-setButtonLoading(button, "Eliminando...");
-      try {
-        const res = await fetch(API, {
-          method: "POST",
-          body: JSON.stringify({
-            action: "deleteMovilProgramacion",
-            user: currentUser,
-            id
-          })
-        });
+async function deleteMovil(id, button) {
+  setButtonLoading(button, "Eliminando...");
 
-        const data = await res.json();
-        }
+  try {
+    const res = await fetch(API, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "deleteMovilProgramacion",
+        user: currentUser,
+        id
+      })
+    });
 
-limpiarCacheMoviles();
-await loadMoviles();
-} catch (error) {
-} finally {
-  resetButtonLoading(button);
-}
+    const data = await res.json();
+
+    if (!data.success) {
+      return;
     }
 
-    function onWeekChange() {
+    limpiarCacheMoviles();
+    await loadMoviles();
+
+  } catch (error) {
+  } finally {
+    resetButtonLoading(button);
+  }
+}
+
+  function onWeekChange() {
   const module = document.getElementById("moduleView").value;
 
   if (module === "solicitudes") {
