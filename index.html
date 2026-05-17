@@ -953,10 +953,11 @@
       Enviar link del formulario de solicitud de móviles a correos predefinidos.
     </p>
 
-    <div class="info-box">
-  Los correos se administran desde la hoja:
-  <strong>ConfiguracionCorreos</strong>
-</div>
+<div id="correosSolicitudContainer"></div>
+
+<button type="button" class="btn btn-secondary" onclick="addCorreoSolicitud()">
+  + Agregar correo
+</button>
 
     <div id="enviarSolicitudesError" class="error-text hidden"></div>
 
@@ -2487,9 +2488,10 @@ function renderGroupedCellItems(items) {
   Object.keys(cacheSolicitudes).forEach(k => delete cacheSolicitudes[k]);
 } 
 
-function openEnviarSolicitudesModal() {
+async function openEnviarSolicitudesModal() {
   document.getElementById("enviarSolicitudesError").classList.add("hidden");
   document.getElementById("enviarSolicitudesModalBackdrop").classList.remove("hidden");
+  await cargarCorreosSolicitudMovil();
 }
 
 function closeEnviarSolicitudesModal() {
@@ -2523,13 +2525,106 @@ function removeCorreoSolicitud(index) {
   correosSolicitudMoviles.splice(index, 1);
   renderCorreosSolicitud();
 }
+let correosSolicitudMoviles = [];
 
+async function cargarCorreosSolicitudMovil() {
+  const errorEl = document.getElementById("enviarSolicitudesError");
+
+  try {
+    const res = await fetch(API, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "getCorreosSolicitudMovil",
+        user: currentUser
+      })
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+      errorEl.textContent = data.message || "No fue posible cargar los correos.";
+      errorEl.classList.remove("hidden");
+      return;
+    }
+
+    correosSolicitudMoviles = data.correos || [];
+    renderCorreosSolicitud();
+
+  } catch (error) {
+    errorEl.textContent = "No fue posible conectar con el sistema.";
+    errorEl.classList.remove("hidden");
+  }
+}
+
+function renderCorreosSolicitud() {
+  const container = document.getElementById("correosSolicitudContainer");
+
+  if (!correosSolicitudMoviles.length) {
+    correosSolicitudMoviles = [""];
+  }
+
+  container.innerHTML = correosSolicitudMoviles.map((correo, index) => `
+    <div style="display:flex;gap:8px;margin-bottom:10px;">
+      <input
+        type="email"
+        value="${escapeHtml(correo)}"
+        placeholder="correo@dominio.cl"
+        onchange="correosSolicitudMoviles[${index}] = this.value.trim()"
+      >
+      <button type="button" class="btn btn-danger" onclick="removeCorreoSolicitud(${index})">
+        X
+      </button>
+    </div>
+  `).join("");
+}
+
+function addCorreoSolicitud() {
+  correosSolicitudMoviles.push("");
+  renderCorreosSolicitud();
+}
+
+function removeCorreoSolicitud(index) {
+  correosSolicitudMoviles.splice(index, 1);
+  renderCorreosSolicitud();
+}
+
+async function guardarCorreosSolicitudMovil() {
+  const errorEl = document.getElementById("enviarSolicitudesError");
+
+  const correos = correosSolicitudMoviles
+    .map(c => String(c || "").trim())
+    .filter(Boolean);
+
+  const res = await fetch(API, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "saveCorreosSolicitudMovil",
+      user: currentUser,
+      correos: correos
+    })
+  });
+
+  const data = await res.json();
+
+  if (!data.success) {
+    errorEl.textContent = data.message || "No fue posible guardar los correos.";
+    errorEl.classList.remove("hidden");
+    return false;
+  }
+
+  correosSolicitudMoviles = correos;
+  return true;
+}
 async function enviarSolicitudesMoviles(button) {
   const errorEl = document.getElementById("enviarSolicitudesError");
+  errorEl.classList.add("hidden");
 
   setButtonLoading(button, "Enviando...");
 
   try {
+    const guardado = await guardarCorreosSolicitudMovil();
+    if (!guardado) return;
+
     const res = await fetch(API, {
       method: "POST",
       body: JSON.stringify({
