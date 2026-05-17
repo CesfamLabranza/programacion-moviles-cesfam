@@ -953,11 +953,10 @@
       Enviar link del formulario de solicitud de móviles a correos predefinidos.
     </p>
 
-    <div id="correosSolicitudContainer"></div>
-
-    <button type="button" class="btn btn-secondary" onclick="addCorreoSolicitud()">
-      + Agregar correo
-    </button>
+    <div class="info-box">
+  Los correos se administran desde la hoja:
+  <strong>ConfiguracionCorreos</strong>
+</div>
 
     <div id="enviarSolicitudesError" class="error-text hidden"></div>
 
@@ -2487,12 +2486,8 @@ function renderGroupedCellItems(items) {
   Object.keys(cacheProgramacion).forEach(k => delete cacheProgramacion[k]);
   Object.keys(cacheSolicitudes).forEach(k => delete cacheSolicitudes[k]);
 } 
-    let correosSolicitudMoviles = [
-  "gonzalo.olave@temuco.cl"
-];
 
 function openEnviarSolicitudesModal() {
-  renderCorreosSolicitud();
   document.getElementById("enviarSolicitudesError").classList.add("hidden");
   document.getElementById("enviarSolicitudesModalBackdrop").classList.remove("hidden");
 }
@@ -2532,16 +2527,6 @@ function removeCorreoSolicitud(index) {
 async function enviarSolicitudesMoviles(button) {
   const errorEl = document.getElementById("enviarSolicitudesError");
 
-  correosSolicitudMoviles = correosSolicitudMoviles
-    .map(c => String(c || "").trim())
-    .filter(Boolean);
-
-  if (!correosSolicitudMoviles.length) {
-    errorEl.textContent = "Debe ingresar al menos un correo.";
-    errorEl.classList.remove("hidden");
-    return;
-  }
-
   setButtonLoading(button, "Enviando...");
 
   try {
@@ -2549,8 +2534,7 @@ async function enviarSolicitudesMoviles(button) {
       method: "POST",
       body: JSON.stringify({
         action: "enviarFormularioSolicitudMovil",
-        user: currentUser,
-        correos: correosSolicitudMoviles
+        user: currentUser
       })
     });
 
