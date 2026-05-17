@@ -627,6 +627,7 @@
         <button id="newButton" class="btn btn-primary hidden" onclick="openMovilModal()">+ Nueva programación</button>
         <button id="btnPdf" class="btn btn-secondary" onclick="generarPDFVista()">Generar PDF</button>
         <button id="btnSolicitudExterna" class="btn btn-success" onclick="abrirFormularioSolicitud()">+ Solicitud de móvil</button>
+        <button id="btnEnviarSolicitudes" class="btn btn-warning" onclick="openEnviarSolicitudesModal()">Enviar solicitudes</button>
       </div>
 
       <div class="user-box">
@@ -945,7 +946,27 @@
       </form>
     </div>
   </div>
+<div id="enviarSolicitudesModalBackdrop" class="modal-backdrop hidden">
+  <div class="modal" style="max-width:760px;">
+    <h2 class="section-title" style="margin-top:0;">Enviar solicitudes</h2>
+    <p class="section-subtitle">
+      Enviar link del formulario de solicitud de móviles a correos predefinidos.
+    </p>
 
+    <div id="correosSolicitudContainer"></div>
+
+    <button type="button" class="btn btn-secondary" onclick="addCorreoSolicitud()">
+      + Agregar correo
+    </button>
+
+    <div id="enviarSolicitudesError" class="error-text hidden"></div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" onclick="closeEnviarSolicitudesModal()">Cancelar</button>
+      <button type="button" class="btn btn-primary" onclick="enviarSolicitudesMoviles(this)">Enviar</button>
+    </div>
+  </div>
+</div>
   <script>
     const API = "https://script.google.com/macros/s/AKfycbzgwWOc0ZymXg6D_5yncrjhxkNRpEZVhGLYm0eC-fsOIMo01Tuoo_tQT7kHFUW6Qnwc/exec";
 
@@ -2466,6 +2487,90 @@ function renderGroupedCellItems(items) {
   Object.keys(cacheProgramacion).forEach(k => delete cacheProgramacion[k]);
   Object.keys(cacheSolicitudes).forEach(k => delete cacheSolicitudes[k]);
 } 
+    let correosSolicitudMoviles = [
+  "gonzalo.olave@temuco.cl"
+];
+
+function openEnviarSolicitudesModal() {
+  renderCorreosSolicitud();
+  document.getElementById("enviarSolicitudesError").classList.add("hidden");
+  document.getElementById("enviarSolicitudesModalBackdrop").classList.remove("hidden");
+}
+
+function closeEnviarSolicitudesModal() {
+  document.getElementById("enviarSolicitudesModalBackdrop").classList.add("hidden");
+}
+
+function renderCorreosSolicitud() {
+  const container = document.getElementById("correosSolicitudContainer");
+
+  container.innerHTML = correosSolicitudMoviles.map((correo, index) => `
+    <div style="display:flex;gap:8px;margin-bottom:10px;">
+      <input 
+        type="email" 
+        value="${escapeHtml(correo)}"
+        onchange="correosSolicitudMoviles[${index}] = this.value.trim()"
+        placeholder="correo@dominio.cl"
+      >
+      <button type="button" class="btn btn-danger" onclick="removeCorreoSolicitud(${index})">
+        X
+      </button>
+    </div>
+  `).join("");
+}
+
+function addCorreoSolicitud() {
+  correosSolicitudMoviles.push("");
+  renderCorreosSolicitud();
+}
+
+function removeCorreoSolicitud(index) {
+  correosSolicitudMoviles.splice(index, 1);
+  renderCorreosSolicitud();
+}
+
+async function enviarSolicitudesMoviles(button) {
+  const errorEl = document.getElementById("enviarSolicitudesError");
+
+  correosSolicitudMoviles = correosSolicitudMoviles
+    .map(c => String(c || "").trim())
+    .filter(Boolean);
+
+  if (!correosSolicitudMoviles.length) {
+    errorEl.textContent = "Debe ingresar al menos un correo.";
+    errorEl.classList.remove("hidden");
+    return;
+  }
+
+  setButtonLoading(button, "Enviando...");
+
+  try {
+    const res = await fetch(API, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "enviarFormularioSolicitudMovil",
+        user: currentUser,
+        correos: correosSolicitudMoviles
+      })
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+      errorEl.textContent = data.message || "No fue posible enviar las solicitudes.";
+      errorEl.classList.remove("hidden");
+      return;
+    }
+
+    closeEnviarSolicitudesModal();
+
+  } catch (error) {
+    errorEl.textContent = "No fue posible conectar con el sistema.";
+    errorEl.classList.remove("hidden");
+  } finally {
+    resetButtonLoading(button);
+  }
+}
     initApp();
   </script>
 </body>
